@@ -17,7 +17,7 @@ export class ResportsAwsCdkStack extends cdk.Stack {
 
     // defines an AWS Lambda resource
     const hello = new NodejsFunction(this, "HelloHandler", {
-      entry: join(__dirname, "lambdas", "hello.ts"),
+      entry: join(__dirname, "/../lambdas", "hello.ts"),
       ...nodeJsFunctionProps,
     });
   }
