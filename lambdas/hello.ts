@@ -1,6 +1,6 @@
-import { Handler } from "aws-lambda";
+import { APIGatewayEvent, Handler } from "aws-lambda";
 
-export const handler: Handler = async function (event) {
+export const handler: Handler = async function (event: APIGatewayEvent) {
   console.log("request:", JSON.stringify(event, undefined, 2));
   return {
     statusCode: 200,
