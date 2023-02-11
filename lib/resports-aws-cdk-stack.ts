@@ -1,5 +1,6 @@
 import * as cdk from "aws-cdk-lib";
 import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as apigw from "aws-cdk-lib/aws-apigateway";
 import {
   NodejsFunction,
   NodejsFunctionProps,
@@ -19,6 +20,11 @@ export class ResportsAwsCdkStack extends cdk.Stack {
     const hello = new NodejsFunction(this, "HelloHandler", {
       entry: join(__dirname, "/../lambdas", "hello.ts"),
       ...nodeJsFunctionProps,
+    });
+
+    // defines an API Gateway REST API resource backed by our "hello" function
+    new apigw.LambdaRestApi(this, "Endpoint", {
+      handler: hello,
     });
   }
 }
