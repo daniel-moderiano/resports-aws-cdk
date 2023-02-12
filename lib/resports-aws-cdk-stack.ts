@@ -1,6 +1,6 @@
 import * as cdk from "aws-cdk-lib";
 import * as lambda from "aws-cdk-lib/aws-lambda";
-import { HttpApi } from "@aws-cdk/aws-apigatewayv2-alpha";
+import { HttpApi, HttpMethod } from "@aws-cdk/aws-apigatewayv2-alpha";
 import {
   NodejsFunction,
   NodejsFunctionProps,
@@ -31,5 +31,11 @@ export class ResportsAwsCdkStack extends cdk.Stack {
 
     // defines an API Gateway HTTP API resource
     const httpApi = new HttpApi(this, "HttpApi");
+
+    httpApi.addRoutes({
+      path: "/hello",
+      methods: [HttpMethod.GET],
+      integration: helloIntegration,
+    });
   }
 }
