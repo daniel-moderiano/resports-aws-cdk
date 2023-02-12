@@ -55,6 +55,32 @@ export class ResportsAwsCdkStack extends cdk.Stack {
       hello
     );
 
+    // Add lambda integrations for each channel handler
+    const getAllChannelsIntegration = new HttpLambdaIntegration(
+      "GetAllChannelsIntegration",
+      getAllChannels
+    );
+
+    const getChannelIntegration = new HttpLambdaIntegration(
+      "GetChannelIntegration",
+      getChannel
+    );
+
+    const addChannelIntegration = new HttpLambdaIntegration(
+      "AddChannelIntegration",
+      addChannel
+    );
+
+    const updateChannelIntegration = new HttpLambdaIntegration(
+      "UpdateChannelIntegration",
+      updateChannel
+    );
+
+    const deleteChannelIntegration = new HttpLambdaIntegration(
+      "DeleteChannelIntegration",
+      deleteChannel
+    );
+
     // defines an API Gateway HTTP API resource
     const httpApi = new HttpApi(this, "HttpApi");
 
