@@ -1,6 +1,6 @@
 import { Handler } from "aws-lambda";
 
-export const getAllChannels: Handler = async function () {
+export const handler: Handler = async function () {
   return {
     statusCode: 200,
     headers: { "Content-Type": "text/plain" },
