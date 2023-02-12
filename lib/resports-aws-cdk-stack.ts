@@ -32,10 +32,34 @@ export class ResportsAwsCdkStack extends cdk.Stack {
     // defines an API Gateway HTTP API resource
     const httpApi = new HttpApi(this, "HttpApi");
 
-    // Attaches our integrated function to the "/hello" path
+    // Define the REST channel routes
     httpApi.addRoutes({
-      path: "/hello",
+      path: "/channels",
       methods: [HttpMethod.GET],
+      integration: helloIntegration,
+    });
+
+    httpApi.addRoutes({
+      path: "/channels/{channelId}",
+      methods: [HttpMethod.GET],
+      integration: helloIntegration,
+    });
+
+    httpApi.addRoutes({
+      path: "/channels/{channelId}",
+      methods: [HttpMethod.POST],
+      integration: helloIntegration,
+    });
+
+    httpApi.addRoutes({
+      path: "/channels/{channelId}",
+      methods: [HttpMethod.PUT],
+      integration: helloIntegration,
+    });
+
+    httpApi.addRoutes({
+      path: "/channels/{channelId}",
+      methods: [HttpMethod.DELETE],
       integration: helloIntegration,
     });
 
