@@ -23,6 +23,32 @@ export class ResportsAwsCdkStack extends cdk.Stack {
       ...nodeJsFunctionProps,
     });
 
+    // Define all Channel Lambda resources
+    const getAllChannels = new NodejsFunction(this, "GetAllChannelsHandler", {
+      entry: join(__dirname, "/../lambdas", "getAllChannels.ts"),
+      ...nodeJsFunctionProps,
+    });
+
+    const getChannel = new NodejsFunction(this, "GetChannelHandler", {
+      entry: join(__dirname, "/../lambdas", "getChannel.ts"),
+      ...nodeJsFunctionProps,
+    });
+
+    const addChannel = new NodejsFunction(this, "AddChannelHandler", {
+      entry: join(__dirname, "/../lambdas", "addChannel.ts"),
+      ...nodeJsFunctionProps,
+    });
+
+    const updateChannel = new NodejsFunction(this, "UpdateChannelHandler", {
+      entry: join(__dirname, "/../lambdas", "updateChannel.ts"),
+      ...nodeJsFunctionProps,
+    });
+
+    const deleteChannel = new NodejsFunction(this, "DeleteChannelHandler", {
+      entry: join(__dirname, "/../lambdas", "deleteChannel.ts"),
+      ...nodeJsFunctionProps,
+    });
+
     // Integrate our hello function with the HTTP API. This connects the API route to the lambda service
     const helloIntegration = new HttpLambdaIntegration(
       "HelloIntegration",
