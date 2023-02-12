@@ -88,31 +88,31 @@ export class ResportsAwsCdkStack extends cdk.Stack {
     httpApi.addRoutes({
       path: "/channels",
       methods: [HttpMethod.GET],
-      integration: helloIntegration,
+      integration: getAllChannelsIntegration,
     });
 
     httpApi.addRoutes({
       path: "/channels/{channelId}",
       methods: [HttpMethod.GET],
-      integration: helloIntegration,
+      integration: getChannelIntegration,
     });
 
     httpApi.addRoutes({
       path: "/channels/{channelId}",
       methods: [HttpMethod.POST],
-      integration: helloIntegration,
+      integration: addChannelIntegration,
     });
 
     httpApi.addRoutes({
       path: "/channels/{channelId}",
       methods: [HttpMethod.PUT],
-      integration: helloIntegration,
+      integration: updateChannelIntegration,
     });
 
     httpApi.addRoutes({
       path: "/channels/{channelId}",
       methods: [HttpMethod.DELETE],
-      integration: helloIntegration,
+      integration: deleteChannelIntegration,
     });
 
     new cdk.CfnOutput(this, "apiUrl", {
