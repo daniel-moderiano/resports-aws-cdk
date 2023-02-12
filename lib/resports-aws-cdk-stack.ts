@@ -32,10 +32,15 @@ export class ResportsAwsCdkStack extends cdk.Stack {
     // defines an API Gateway HTTP API resource
     const httpApi = new HttpApi(this, "HttpApi");
 
+    // Attaches our integrated function to the "/hello" path
     httpApi.addRoutes({
       path: "/hello",
       methods: [HttpMethod.GET],
       integration: helloIntegration,
+    });
+
+    new cdk.CfnOutput(this, "apiUrl", {
+      value: httpApi.url ? httpApi.url : "No URL found",
     });
   }
 }
