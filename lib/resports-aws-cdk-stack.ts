@@ -8,10 +8,14 @@ import {
 import { Construct } from "constructs";
 import { join } from "path";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
+import { CognitoUserPool } from "../constructs/cognito-user-pool";
 
 export class ResportsAwsCdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    // Instantiate the separately defined cognito construct
+    new CognitoUserPool(this, "CognitoUserPool");
 
     const nodeJsFunctionProps: NodejsFunctionProps = {
       runtime: lambda.Runtime.NODEJS_16_X, // execution environment
