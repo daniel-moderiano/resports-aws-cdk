@@ -53,6 +53,8 @@ export class CognitoUserPool extends Construct {
         tempPasswordValidity: Duration.days(7),
       },
 
+      deletionProtection: true,
+
       // TODO: post-confirmation lambda triggers
 
       // Adjust default account recovery to use email only, not SMS
