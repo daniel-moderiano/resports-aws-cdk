@@ -1,5 +1,6 @@
 import { Construct } from "constructs";
 import * as cognito from "aws-cdk-lib/aws-cognito";
+import { Duration } from "aws-cdk-lib";
 
 export class CognitoUserPool extends Construct {
   constructor(scope: Construct, id: string) {
@@ -18,11 +19,20 @@ export class CognitoUserPool extends Construct {
         email: true,
       },
 
+      // Configure the attributes that you want to keep active when an update to their value is pending. Your users can receive messages and sign in with the original attribute value until they verify the new value.
+      keepOriginal: {
+        email: true,
+      },
+
       // Users must provide full name on sign-up, but cannot change it thereafter
       standardAttributes: {
         fullname: {
           required: true,
           mutable: false,
+        },
+        email: {
+          required: true,
+          mutable: true,
         },
       },
 
@@ -32,6 +42,24 @@ export class CognitoUserPool extends Construct {
         sms: false,
         otp: true,
       },
+
+      // TODO: customise password policy
+      passwordPolicy: {
+        minLength: 8,
+        requireLowercase: true,
+        requireUppercase: true,
+        requireDigits: true,
+        requireSymbols: true,
+        tempPasswordValidity: Duration.days(7),
+      },
+
+      // TODO: post-confirmation lambda triggers
+
+      // Adjust default account recovery to use email only, not SMS
+      accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
     });
+
+    // Configure the App Client
+    userPool.addClient("DemoAppClient", {});
   }
 }
