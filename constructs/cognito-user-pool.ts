@@ -60,6 +60,15 @@ export class CognitoUserPool extends Construct {
     });
 
     // Configure the App Client
-    userPool.addClient("DemoAppClient", {});
+    const appClient = userPool.addClient("DemoAppClient", {
+      userPoolClientName: "test-app-client",
+    });
+
+    // Configure the Cognito hosted domain where the auth sign-up/log-in pages will be hosted.
+    const domain = userPool.addDomain("DemoUserPoolDomain", {
+      cognitoDomain: {
+        domainPrefix: "resports-demo-app",
+      },
+    });
   }
 }
