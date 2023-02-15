@@ -5,6 +5,7 @@ import {
   HttpMethod,
   HttpAuthorizer,
   HttpAuthorizerType,
+  IHttpAuthorizer,
 } from "@aws-cdk/aws-apigatewayv2-alpha";
 import {
   NodejsFunction,
@@ -14,14 +15,17 @@ import { Construct } from "constructs";
 import { join } from "path";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import { CognitoUserPool } from "../constructs/cognito-user-pool";
-import { HttpUserPoolAuthorizer } from "@aws-cdk/aws-apigatewayv2-authorizers-alpha";
+import {
+  HttpLambdaAuthorizer,
+  HttpUserPoolAuthorizer,
+} from "@aws-cdk/aws-apigatewayv2-authorizers-alpha";
 
 export class ResportsAwsCdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     // Instantiate the separately defined cognito construct
-    const userPool = new CognitoUserPool(this, "CognitoUserPool");
+    const cognitoUserPool = new CognitoUserPool(this, "CognitoUserPool");
 
     const nodeJsFunctionProps: NodejsFunctionProps = {
       runtime: lambda.Runtime.NODEJS_16_X, // execution environment
@@ -94,11 +98,22 @@ export class ResportsAwsCdkStack extends cdk.Stack {
     // defines an API Gateway HTTP API resource
     const httpApi = new HttpApi(this, "HttpApi");
 
+    // Create a general Authorizer for handling secure API requests, that can later be attached to certain routes
+    const authorizer = new HttpUserPoolAuthorizer(
+      "HttpAuthorizer",
+      cognitoUserPool.userPool,
+      {
+        userPoolClients: [cognitoUserPool.userPoolClient],
+        identitySource: ["$request.header.Authorization"],
+      }
+    );
+
     // Define the REST channel routes
     httpApi.addRoutes({
       path: "/channels",
       methods: [HttpMethod.GET],
       integration: getAllChannelsIntegration,
+      authorizer,
     });
 
     httpApi.addRoutes({
@@ -123,13 +138,6 @@ export class ResportsAwsCdkStack extends cdk.Stack {
       path: "/channels/{channelId}",
       methods: [HttpMethod.DELETE],
       integration: deleteChannelIntegration,
-    });
-
-    // Create a general Authorizer for handling secure API requests, that can later be attached to certain routes
-    const authorizer = new HttpAuthorizer(this, "HttpAuthorizer", {
-      httpApi: httpApi,
-      identitySource: ["$request.header.Authorization"],
-      type: HttpAuthorizerType.JWT,
     });
 
     new cdk.CfnOutput(this, "apiUrl", {

@@ -5,6 +5,8 @@ import { Duration } from "aws-cdk-lib";
 export class CognitoUserPool extends Construct {
   readonly userPoolId: string;
   readonly userPoolClientId: string;
+  readonly userPool: cognito.UserPool;
+  readonly userPoolClient: cognito.UserPoolClient;
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
@@ -76,6 +78,8 @@ export class CognitoUserPool extends Construct {
       },
     });
 
+    this.userPool = userPool;
+    this.userPoolClient = appClient;
     this.userPoolId = userPool.userPoolId;
     this.userPoolClientId = appClient.userPoolClientId;
   }
