@@ -1,6 +1,11 @@
 import * as cdk from "aws-cdk-lib";
 import * as lambda from "aws-cdk-lib/aws-lambda";
-import { HttpApi, HttpMethod } from "@aws-cdk/aws-apigatewayv2-alpha";
+import {
+  HttpApi,
+  HttpMethod,
+  HttpAuthorizer,
+  HttpAuthorizerType,
+} from "@aws-cdk/aws-apigatewayv2-alpha";
 import {
   NodejsFunction,
   NodejsFunctionProps,
@@ -121,6 +126,11 @@ export class ResportsAwsCdkStack extends cdk.Stack {
     });
 
     // Create a general Authorizer for handling secure API requests, that can later be attached to certain routes
+    const authorizer = new HttpAuthorizer(this, "HttpAuthorizer", {
+      httpApi: httpApi,
+      identitySource: ["$request.header.Authorization"],
+      type: HttpAuthorizerType.JWT,
+    });
 
     new cdk.CfnOutput(this, "apiUrl", {
       value: httpApi.url ? httpApi.url : "No URL found",
