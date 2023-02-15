@@ -9,13 +9,14 @@ import { Construct } from "constructs";
 import { join } from "path";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import { CognitoUserPool } from "../constructs/cognito-user-pool";
+import { HttpUserPoolAuthorizer } from "@aws-cdk/aws-apigatewayv2-authorizers-alpha";
 
 export class ResportsAwsCdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     // Instantiate the separately defined cognito construct
-    new CognitoUserPool(this, "CognitoUserPool");
+    const userPool = new CognitoUserPool(this, "CognitoUserPool");
 
     const nodeJsFunctionProps: NodejsFunctionProps = {
       runtime: lambda.Runtime.NODEJS_16_X, // execution environment
@@ -118,6 +119,8 @@ export class ResportsAwsCdkStack extends cdk.Stack {
       methods: [HttpMethod.DELETE],
       integration: deleteChannelIntegration,
     });
+
+    // Create a general Authorizer for handling secure API requests, that can later be attached to certain routes
 
     new cdk.CfnOutput(this, "apiUrl", {
       value: httpApi.url ? httpApi.url : "No URL found",

@@ -3,6 +3,9 @@ import * as cognito from "aws-cdk-lib/aws-cognito";
 import { Duration } from "aws-cdk-lib";
 
 export class CognitoUserPool extends Construct {
+  readonly userPoolId: string;
+  readonly userPoolClientId: string;
+
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
@@ -72,5 +75,8 @@ export class CognitoUserPool extends Construct {
         domainPrefix: "resports-demo-app",
       },
     });
+
+    this.userPoolId = userPool.userPoolId;
+    this.userPoolClientId = appClient.userPoolClientId;
   }
 }
