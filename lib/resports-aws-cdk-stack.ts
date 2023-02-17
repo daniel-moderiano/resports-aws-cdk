@@ -8,6 +8,7 @@ import {
 import { Construct } from "constructs";
 import { join } from "path";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
+import { HttpJwtAuthorizer } from "@aws-cdk/aws-apigatewayv2-authorizers-alpha";
 
 export class ResportsAwsCdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -84,11 +85,22 @@ export class ResportsAwsCdkStack extends cdk.Stack {
     // defines an API Gateway HTTP API resource
     const httpApi = new HttpApi(this, "HttpApi");
 
+    // Define a JWT authorizer configured to accept Auth0 JWTs from a pre-specified Auth0 API
+    const authorizer = new HttpJwtAuthorizer(
+      "Auth0JwtAuthorizer",
+      "https://dev-c0yb5cr7.us.auth0.com/",
+      {
+        jwtAudience: ["https://auth0-jwt-authorizer"],
+        identitySource: ["$request.header.Authorization"],
+      }
+    );
+
     // Define the REST channel routes
     httpApi.addRoutes({
       path: "/channels",
       methods: [HttpMethod.GET],
       integration: getAllChannelsIntegration,
+      authorizer,
     });
 
     httpApi.addRoutes({
