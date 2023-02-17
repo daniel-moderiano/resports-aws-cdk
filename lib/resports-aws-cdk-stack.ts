@@ -18,12 +18,6 @@ export class ResportsAwsCdkStack extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_16_X, // execution environment
     };
 
-    // defines an AWS Lambda resource
-    const hello = new NodejsFunction(this, "HelloHandler", {
-      entry: join(__dirname, "/../lambdas", "hello.ts"),
-      ...nodeJsFunctionProps,
-    });
-
     // Define all Channel Lambda resources
     const getAllChannels = new NodejsFunction(this, "GetAllChannelsHandler", {
       entry: join(__dirname, "/../lambdas", "getAllChannels.ts"),
@@ -50,10 +44,15 @@ export class ResportsAwsCdkStack extends cdk.Stack {
       ...nodeJsFunctionProps,
     });
 
-    // Integrate our hello function with the HTTP API. This connects the API route to the lambda service
-    const helloIntegration = new HttpLambdaIntegration(
-      "HelloIntegration",
-      hello
+    // Define user POST integration
+    const upsertUser = new NodejsFunction(this, "UpsertUserHandler", {
+      entry: join(__dirname, "/../lambdas", "registerUser.ts"),
+      ...nodeJsFunctionProps,
+    });
+
+    const upsertUserIntegration = new HttpLambdaIntegration(
+      "UpsertUserIntegration",
+      upsertUser
     );
 
     // Add lambda integrations for each channel handler
@@ -125,6 +124,13 @@ export class ResportsAwsCdkStack extends cdk.Stack {
       path: "/channels/{channelId}",
       methods: [HttpMethod.DELETE],
       integration: deleteChannelIntegration,
+    });
+
+    httpApi.addRoutes({
+      path: "/users",
+      methods: [HttpMethod.POST],
+      integration: upsertUserIntegration,
+      authorizer,
     });
 
     new cdk.CfnOutput(this, "apiUrl", {
