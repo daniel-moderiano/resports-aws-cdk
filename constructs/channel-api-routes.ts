@@ -24,24 +24,8 @@ export class ChannelApiRoutes extends Construct {
 
     const { httpApi, authorizer } = props;
 
-    // Define all Channel Lambda resources
-    const getAllChannels = new NodejsFunction(this, "GetAllChannelsHandler", {
-      entry: join(__dirname, "/../lambdas", "getAllChannels.ts"),
-      ...nodeJsFunctionProps,
-    });
-
-    const getChannel = new NodejsFunction(this, "GetChannelHandler", {
-      entry: join(__dirname, "/../lambdas", "getChannel.ts"),
-      ...nodeJsFunctionProps,
-    });
-
-    const addChannel = new NodejsFunction(this, "AddChannelHandler", {
+    const upsertChannel = new NodejsFunction(this, "AddChannelHandler", {
       entry: join(__dirname, "/../lambdas", "addChannel.ts"),
-      ...nodeJsFunctionProps,
-    });
-
-    const updateChannel = new NodejsFunction(this, "UpdateChannelHandler", {
-      entry: join(__dirname, "/../lambdas", "updateChannel.ts"),
       ...nodeJsFunctionProps,
     });
 
@@ -50,25 +34,9 @@ export class ChannelApiRoutes extends Construct {
       ...nodeJsFunctionProps,
     });
 
-    // Add lambda integrations for each channel handler
-    const getAllChannelsIntegration = new HttpLambdaIntegration(
-      "GetAllChannelsIntegration",
-      getAllChannels
-    );
-
-    const getChannelIntegration = new HttpLambdaIntegration(
-      "GetChannelIntegration",
-      getChannel
-    );
-
-    const addChannelIntegration = new HttpLambdaIntegration(
-      "AddChannelIntegration",
-      addChannel
-    );
-
-    const updateChannelIntegration = new HttpLambdaIntegration(
-      "UpdateChannelIntegration",
-      updateChannel
+    const upsertChannelIntegration = new HttpLambdaIntegration(
+      "UpsertChannelIntegration",
+      upsertChannel
     );
 
     const deleteChannelIntegration = new HttpLambdaIntegration(
@@ -76,32 +44,10 @@ export class ChannelApiRoutes extends Construct {
       deleteChannel
     );
 
-    // Define the REST channel routes
-    httpApi.addRoutes({
-      path: "/channels",
-      methods: [HttpMethod.GET],
-      integration: getAllChannelsIntegration,
-      authorizer,
-    });
-
-    httpApi.addRoutes({
-      path: "/channels/{channelId}",
-      methods: [HttpMethod.GET],
-      integration: getChannelIntegration,
-      authorizer,
-    });
-
     httpApi.addRoutes({
       path: "/channels/{channelId}",
       methods: [HttpMethod.POST],
-      integration: addChannelIntegration,
-      authorizer,
-    });
-
-    httpApi.addRoutes({
-      path: "/channels/{channelId}",
-      methods: [HttpMethod.PUT],
-      integration: updateChannelIntegration,
+      integration: upsertChannelIntegration,
       authorizer,
     });
 
