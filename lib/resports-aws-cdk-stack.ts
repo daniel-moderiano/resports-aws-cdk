@@ -9,10 +9,7 @@ import { Construct } from "constructs";
 import { join } from "path";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import { HttpJwtAuthorizer } from "@aws-cdk/aws-apigatewayv2-authorizers-alpha";
-
-export const nodeJsFunctionProps: NodejsFunctionProps = {
-  runtime: lambda.Runtime.NODEJS_16_X, // execution environment
-};
+import { ChannelApiRoutes } from "../constructs/channel-api-routes";
 
 export class ResportsAwsCdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -31,10 +28,15 @@ export class ResportsAwsCdkStack extends cdk.Stack {
       }
     );
 
+    new ChannelApiRoutes(this, "ChannelApiRoutes", {
+      httpApi,
+      authorizer,
+    });
+
     // Define user POST integration
     const upsertUser = new NodejsFunction(this, "UpsertUserHandler", {
       entry: join(__dirname, "/../lambdas", "registerUser.ts"),
-      ...nodeJsFunctionProps,
+      // ...nodeJsFunctionProps,
     });
 
     const upsertUserIntegration = new HttpLambdaIntegration(

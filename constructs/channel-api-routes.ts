@@ -1,25 +1,28 @@
 import { HttpApi, HttpMethod } from "@aws-cdk/aws-apigatewayv2-alpha";
 import { HttpJwtAuthorizer } from "@aws-cdk/aws-apigatewayv2-authorizers-alpha";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
-import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
+import {
+  NodejsFunction,
+  NodejsFunctionProps,
+} from "aws-cdk-lib/aws-lambda-nodejs";
 import { Construct } from "constructs";
 import { join } from "path";
-import { nodeJsFunctionProps } from "../lib/resports-aws-cdk-stack";
+import * as lambda from "aws-cdk-lib/aws-lambda";
 
 interface ChannelRoutesProps {
   httpApi: HttpApi;
   authorizer: HttpJwtAuthorizer;
 }
 
-export class ChannelRoutes extends Construct {
-  public readonly topic: string;
+export const nodeJsFunctionProps: NodejsFunctionProps = {
+  runtime: lambda.Runtime.NODEJS_16_X, // execution environment
+};
 
-  constructor(
-    scope: Construct,
-    id: string,
-    { httpApi, authorizer }: ChannelRoutesProps
-  ) {
+export class ChannelApiRoutes extends Construct {
+  constructor(scope: Construct, id: string, props: ChannelRoutesProps) {
     super(scope, id);
+
+    const { httpApi, authorizer } = props;
 
     // Define all Channel Lambda resources
     const getAllChannels = new NodejsFunction(this, "GetAllChannelsHandler", {
@@ -91,18 +94,21 @@ export class ChannelRoutes extends Construct {
       path: "/channels/{channelId}",
       methods: [HttpMethod.POST],
       integration: addChannelIntegration,
+      authorizer,
     });
 
     httpApi.addRoutes({
       path: "/channels/{channelId}",
       methods: [HttpMethod.PUT],
       integration: updateChannelIntegration,
+      authorizer,
     });
 
     httpApi.addRoutes({
       path: "/channels/{channelId}",
       methods: [HttpMethod.DELETE],
       integration: deleteChannelIntegration,
+      authorizer,
     });
   }
 }
