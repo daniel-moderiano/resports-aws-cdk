@@ -25,7 +25,7 @@ export class UserApiRoutes extends Construct {
     const { httpApi, authorizer } = props;
 
     const upsertUser = new NodejsFunction(this, "UpsertUserHandler", {
-      entry: join(__dirname, "/../lambdas", "registerUser.ts"),
+      entry: join(__dirname, "/../lambdas", "upsertUser.ts"),
       ...nodeJsFunctionProps,
     });
 
