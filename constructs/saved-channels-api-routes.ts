@@ -59,21 +59,21 @@ export class SavedChannelApiRoutes extends Construct {
     );
 
     httpApi.addRoutes({
-      path: "/savedChannels/{savedChannelId}",
+      path: "/saved-channels/{savedChannelId}",
       methods: [HttpMethod.GET],
       integration: getSavedChannelIntegration,
       authorizer,
     });
 
     httpApi.addRoutes({
-      path: "/savedChannels/{savedChannelId}",
+      path: "/saved-channels/{savedChannelId}",
       methods: [HttpMethod.POST],
       integration: addSavedChannelIntegration,
       authorizer,
     });
 
     httpApi.addRoutes({
-      path: "/savedChannels/{savedChannelId}",
+      path: "/saved-channels/{savedChannelId}",
       methods: [HttpMethod.DELETE],
       integration: deleteSavedChannelIntegration,
       authorizer,
