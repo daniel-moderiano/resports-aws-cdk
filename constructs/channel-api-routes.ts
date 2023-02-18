@@ -25,7 +25,7 @@ export class ChannelApiRoutes extends Construct {
     const { httpApi, authorizer } = props;
 
     const upsertChannel = new NodejsFunction(this, "UpsertChannelHandler", {
-      entry: join(__dirname, "/../lambdas", "addChannel.ts"),
+      entry: join(__dirname, "/../lambdas", "upsertChannel.ts"),
       ...nodeJsFunctionProps,
     });
 
