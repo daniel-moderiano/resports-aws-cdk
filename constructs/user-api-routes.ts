@@ -9,7 +9,7 @@ import { Construct } from "constructs";
 import { join } from "path";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 
-interface ChannelRoutesProps {
+interface UserRoutesProps {
   httpApi: HttpApi;
   authorizer: HttpJwtAuthorizer;
 }
@@ -18,43 +18,43 @@ export const nodeJsFunctionProps: NodejsFunctionProps = {
   runtime: lambda.Runtime.NODEJS_16_X, // execution environment
 };
 
-export class ChannelApiRoutes extends Construct {
-  constructor(scope: Construct, id: string, props: ChannelRoutesProps) {
+export class UserApiRoutes extends Construct {
+  constructor(scope: Construct, id: string, props: UserRoutesProps) {
     super(scope, id);
 
     const { httpApi, authorizer } = props;
 
-    const upsertChannel = new NodejsFunction(this, "UpsertChannelHandler", {
-      entry: join(__dirname, "/../lambdas", "addChannel.ts"),
+    const upsertUser = new NodejsFunction(this, "UpsertUserHandler", {
+      entry: join(__dirname, "/../lambdas", "registerUser.ts"),
       ...nodeJsFunctionProps,
     });
 
-    const deleteChannel = new NodejsFunction(this, "DeleteChannelHandler", {
-      entry: join(__dirname, "/../lambdas", "deleteChannel.ts"),
+    const deleteUser = new NodejsFunction(this, "DeleteUserHandler", {
+      entry: join(__dirname, "/../lambdas", "deleteUser.ts"),
       ...nodeJsFunctionProps,
     });
 
-    const upsertChannelIntegration = new HttpLambdaIntegration(
-      "UpsertChannelIntegration",
-      upsertChannel
+    const upsertUserIntegration = new HttpLambdaIntegration(
+      "UpsertUserIntegration",
+      upsertUser
     );
 
-    const deleteChannelIntegration = new HttpLambdaIntegration(
-      "DeleteChannelIntegration",
-      deleteChannel
+    const deleteUserIntegration = new HttpLambdaIntegration(
+      "DeleteUserIntegration",
+      deleteUser
     );
 
     httpApi.addRoutes({
-      path: "/channels/{channelId}",
+      path: "/users/{userId}",
       methods: [HttpMethod.POST],
-      integration: upsertChannelIntegration,
+      integration: upsertUserIntegration,
       authorizer,
     });
 
     httpApi.addRoutes({
-      path: "/channels/{channelId}",
+      path: "/users/{userId}",
       methods: [HttpMethod.DELETE],
-      integration: deleteChannelIntegration,
+      integration: deleteUserIntegration,
       authorizer,
     });
   }
