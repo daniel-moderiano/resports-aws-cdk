@@ -4,6 +4,7 @@ import { Construct } from "constructs";
 import { HttpJwtAuthorizer } from "@aws-cdk/aws-apigatewayv2-authorizers-alpha";
 import { ChannelApiRoutes } from "../constructs/channel-api-routes";
 import { UserApiRoutes } from "../constructs/user-api-routes";
+import { SavedChannelApiRoutes } from "../constructs/saved-channels-api-routes";
 
 export class ResportsAwsCdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -28,6 +29,11 @@ export class ResportsAwsCdkStack extends cdk.Stack {
     });
 
     new UserApiRoutes(this, "UserApiRoutes", {
+      httpApi,
+      authorizer,
+    });
+
+    new SavedChannelApiRoutes(this, "SavedChannelApiRoutes", {
       httpApi,
       authorizer,
     });
