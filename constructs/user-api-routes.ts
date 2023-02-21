@@ -34,6 +34,15 @@ export class UserApiRoutes extends Construct {
       ...nodeJsFunctionProps,
     });
 
+    const getUserSavedChannels = new NodejsFunction(
+      this,
+      "GetUserSavedChannelsHandler",
+      {
+        entry: join(__dirname, "/../lambdas", "getUserSavedChannels.ts"),
+        ...nodeJsFunctionProps,
+      }
+    );
+
     const upsertUserIntegration = new HttpLambdaIntegration(
       "UpsertUserIntegration",
       upsertUser
@@ -42,6 +51,11 @@ export class UserApiRoutes extends Construct {
     const deleteUserIntegration = new HttpLambdaIntegration(
       "DeleteUserIntegration",
       deleteUser
+    );
+
+    const getUserSavedChannelsIntegration = new HttpLambdaIntegration(
+      "GetUserSavedChannelsIntegration",
+      getUserSavedChannels
     );
 
     httpApi.addRoutes({
@@ -55,6 +69,13 @@ export class UserApiRoutes extends Construct {
       path: "/users/{userId}",
       methods: [HttpMethod.DELETE],
       integration: deleteUserIntegration,
+      authorizer,
+    });
+
+    httpApi.addRoutes({
+      path: "/users/{userId}/saved-channels",
+      methods: [HttpMethod.GET],
+      integration: getUserSavedChannelsIntegration,
       authorizer,
     });
   }
