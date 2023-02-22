@@ -13,7 +13,7 @@ import {
   Vpc,
 } from "aws-cdk-lib/aws-ec2";
 import { Duration, SecretValue } from "aws-cdk-lib";
-import { databaseConfig } from "../config/database";
+import { env } from "../config/database";
 
 interface DatabaseProps {
   vpc: Vpc;
@@ -42,7 +42,7 @@ export class PostgresDatabase extends Construct {
       allocatedStorage: 20,
       credentials: {
         username: "postgres",
-        password: SecretValue.unsafePlainText(databaseConfig.password),
+        password: SecretValue.unsafePlainText(env.DATABASE_PASSWORD),
       },
     });
 

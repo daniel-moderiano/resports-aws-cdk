@@ -1,9 +1,8 @@
-import * as dotenv from "dotenv";
-dotenv.config();
+require("dotenv").config();
+import { cleanEnv, str } from "envalid";
 
-export const databaseConfig = {
-  username: process.env.DATABASE_USER,
-  password: process.env.DATABASE_PASSWORD,
-  database: process.env.DATABASE_NAME,
-  port: 5432,
-};
+export const env = cleanEnv(process.env, {
+  DATABASE_USE: str(),
+  DATABASE_PASSWORD: str(),
+  DATABASE_NAME: str(),
+});
