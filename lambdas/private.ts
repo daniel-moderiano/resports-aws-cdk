@@ -17,7 +17,19 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     ]);
     console.log(res.rows[0].message); // Hello world!
     await client.end();
+
+    return {
+      statusCode: 200,
+      headers: { "Content-Type": "text/plain" },
+      body: res.rows[0].message,
+    };
   } catch (err) {
     console.log(err);
+
+    return {
+      statusCode: 500,
+      headers: { "Content-Type": "text/plain" },
+      body: "Welp, something went wrong",
+    };
   }
 };
