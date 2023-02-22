@@ -6,6 +6,7 @@ import { ChannelApiRoutes } from "../constructs/channel-api-routes";
 import { UserApiRoutes } from "../constructs/user-api-routes";
 import { SavedChannelApiRoutes } from "../constructs/saved-channels-api-routes";
 import { VPC } from "../constructs/vpc";
+import { PostgresDatabase } from "../constructs/database";
 
 export class ResportsAwsCdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -25,6 +26,9 @@ export class ResportsAwsCdkStack extends cdk.Stack {
     );
 
     const vpc = new VPC(this, "VPC");
+    const database = new PostgresDatabase(this, "ResportsDatabase", {
+      vpc: vpc.vpc,
+    });
 
     new ChannelApiRoutes(this, "ChannelApiRoutes", {
       httpApi,

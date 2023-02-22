@@ -12,7 +12,8 @@ import {
   SubnetType,
   Vpc,
 } from "aws-cdk-lib/aws-ec2";
-import { Duration } from "aws-cdk-lib";
+import { Duration, SecretValue } from "aws-cdk-lib";
+import { databaseConfig } from "../config/database";
 
 interface DatabaseProps {
   vpc: Vpc;
@@ -35,8 +36,14 @@ export class PostgresDatabase extends Construct {
       vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
       instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.MICRO),
       port: 5432,
-      databaseName: "resports-dev",
+      databaseName: "resportsDev",
       backupRetention: Duration.days(0),
+      enablePerformanceInsights: true,
+      allocatedStorage: 20,
+      credentials: {
+        username: "postgres",
+        password: SecretValue.unsafePlainText(databaseConfig.password),
+      },
     });
 
     this.database.connections.allowInternally;
