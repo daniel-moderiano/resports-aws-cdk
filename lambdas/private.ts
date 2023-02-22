@@ -1,5 +1,5 @@
 import { Handler, APIGatewayProxyEventV2 } from "aws-lambda";
-import { Client } from "pg";
+const { Client } = require("pg").native;
 import { env } from "../config/database";
 
 export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
