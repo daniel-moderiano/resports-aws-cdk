@@ -15,17 +15,11 @@ export class VPC extends Construct {
     super(scope, id);
 
     this.vpc = new Vpc(this, "VPC", {
-      natGateways: 1,
       subnetConfiguration: [
         {
           cidrMask: 24,
           name: "Private",
           subnetType: SubnetType.PRIVATE_ISOLATED,
-        },
-        {
-          cidrMask: 24,
-          name: "PrivateWithEgress",
-          subnetType: SubnetType.PRIVATE_WITH_EGRESS,
         },
         {
           cidrMask: 24,
@@ -35,11 +29,11 @@ export class VPC extends Construct {
       ],
     });
 
-    this.securityGroup = new SecurityGroup(this, "QuerySecurityGroup", {
-      vpc: this.vpc,
-      description: "Security Group for Database Queries",
-      allowAllOutbound: true,
-    });
-    this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(5432));
+    // this.securityGroup = new SecurityGroup(this, "QuerySecurityGroup", {
+    //   vpc: this.vpc,
+    //   description: "Security Group for Database Queries",
+    //   allowAllOutbound: true,
+    // });
+    // this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(5432));
   }
 }
