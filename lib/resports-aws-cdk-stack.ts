@@ -28,6 +28,7 @@ export class ResportsAwsCdkStack extends cdk.Stack {
     const vpc = new VPC(this, "VPC");
     const database = new PostgresDatabase(this, "ResportsDatabase", {
       vpc: vpc.vpc,
+      securityGroup: vpc.securityGroup,
     });
 
     new ChannelApiRoutes(this, "ChannelApiRoutes", {

@@ -17,7 +17,7 @@ import { env } from "../config/database";
 
 interface DatabaseProps {
   vpc: Vpc;
-  securityGroup?: SecurityGroup;
+  securityGroup: SecurityGroup;
 }
 
 export class PostgresDatabase extends Construct {
@@ -44,6 +44,7 @@ export class PostgresDatabase extends Construct {
         username: "postgres",
         password: SecretValue.unsafePlainText(env.DATABASE_PASSWORD),
       },
+      securityGroups: [props.securityGroup],
     });
 
     this.database.connections.allowInternally;

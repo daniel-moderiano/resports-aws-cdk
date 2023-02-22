@@ -29,11 +29,11 @@ export class VPC extends Construct {
       ],
     });
 
-    // this.securityGroup = new SecurityGroup(this, "QuerySecurityGroup", {
-    //   vpc: this.vpc,
-    //   description: "Security Group for Database Queries",
-    //   allowAllOutbound: true,
-    // });
-    // this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(5432));
+    this.securityGroup = new SecurityGroup(this, "QuerySecurityGroup", {
+      vpc: this.vpc,
+      description: "Security Group for Database Queries",
+      allowAllOutbound: true,
+    });
+    this.securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcp(5432));
   }
 }

@@ -1,5 +1,5 @@
 import { Handler, APIGatewayProxyEventV2 } from "aws-lambda";
-const { Client } = require("pg").native;
+import { Client } from "pg";
 import { env } from "../config/database";
 
 export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
@@ -18,6 +18,6 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     console.log(res.rows[0].message); // Hello world!
     await client.end();
   } catch (err) {
-    console.log("error while trying to connect to db");
+    console.log(err);
   }
 };
