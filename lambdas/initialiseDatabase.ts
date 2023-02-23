@@ -1,4 +1,4 @@
-import { Handler, APIGatewayProxyEventV2 } from "aws-lambda";
+import { Handler } from "aws-lambda";
 import { Client } from "pg";
 import { env } from "../config/database";
 import { createNewTables, dropExistingTables } from "../helpers/initdb";

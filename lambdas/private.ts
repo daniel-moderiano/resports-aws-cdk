@@ -1,8 +1,8 @@
-import { Handler, APIGatewayProxyEventV2 } from "aws-lambda";
+import { Handler } from "aws-lambda";
 import { Client } from "pg";
 import { env } from "../config/database";
 
-export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
+export const handler: Handler = async function () {
   try {
     const client = new Client({
       user: env.DATABASE_USER,
@@ -12,16 +12,17 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
       port: 5432,
     });
     await client.connect();
-    const res = await client.query("SELECT $1::text as message", [
-      "Hello world!",
-    ]);
-    console.log(res.rows[0].message); // Hello world!
+
+    const res = await client.query(
+      "SELECT * FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema'"
+    );
+
     await client.end();
 
     return {
       statusCode: 200,
       headers: { "Content-Type": "text/plain" },
-      body: res.rows[0].message,
+      body: res.rows,
     };
   } catch (err) {
     console.log(err);
