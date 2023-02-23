@@ -3,7 +3,7 @@ import { Client } from "pg";
 import { env } from "../config/database";
 import { createNewTables, dropExistingTables } from "../helpers/initdb";
 
-export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
+export const handler: Handler = async function () {
   try {
     const client = new Client({
       user: env.DATABASE_USER,
@@ -16,16 +16,13 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
 
     await dropExistingTables(client);
     await createNewTables(client);
-    const res = await client.query(
-      "SELECT * FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema'"
-    );
 
     await client.end();
 
     return {
       statusCode: 200,
       headers: { "Content-Type": "text/plain" },
-      body: res.rows,
+      body: "Database initialised",
     };
   } catch (err) {
     console.log(err);
