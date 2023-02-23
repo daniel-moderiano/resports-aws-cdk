@@ -7,7 +7,12 @@ import { UserApiRoutes } from "../constructs/user-api-routes";
 import { SavedChannelApiRoutes } from "../constructs/saved-channels-api-routes";
 import { VPC } from "../constructs/vpc";
 import { PostgresDatabase } from "../constructs/database";
-import { DatabaseInitialiseTrigger } from "../constructs/database-initialise-trigger";
+import { env } from "../config/database";
+import { SubnetType } from "aws-cdk-lib/aws-ec2";
+import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
+import { join } from "path";
+import { Duration } from "aws-cdk-lib";
+import * as lambda from "aws-cdk-lib/aws-lambda";
 
 export class ResportsAwsCdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -32,6 +37,21 @@ export class ResportsAwsCdkStack extends cdk.Stack {
       securityGroup: vpc.securityGroup,
     });
 
+    // Database initialiser lambda. Should be called manually via CLI or console as this WILL erase the database
+    new NodejsFunction(this, "DatabaseInitialiser", {
+      entry: join(__dirname, "/../lambdas", "initialiseDatabase.ts"),
+      vpc: vpc.vpc,
+      vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
+      environment: {
+        DATABASE_HOST: env.DATABASE_HOST,
+        DATABASE_NAME: env.DATABASE_NAME,
+        DATABASE_PASSWORD: env.DATABASE_PASSWORD,
+        DATABASE_USER: env.DATABASE_USER,
+      },
+      timeout: Duration.seconds(30),
+      runtime: lambda.Runtime.NODEJS_16_X,
+    });
+
     new ChannelApiRoutes(this, "ChannelApiRoutes", {
       httpApi,
       authorizer,
@@ -46,11 +66,6 @@ export class ResportsAwsCdkStack extends cdk.Stack {
     new SavedChannelApiRoutes(this, "SavedChannelApiRoutes", {
       httpApi,
       authorizer,
-    });
-
-    new DatabaseInitialiseTrigger(this, "DatabaseInitialiser", {
-      vpc: vpc.vpc,
-      databaseContstruct: database,
     });
 
     new cdk.CfnOutput(this, "apiUrl", {
