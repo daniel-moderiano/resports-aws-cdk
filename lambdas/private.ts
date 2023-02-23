@@ -17,12 +17,14 @@ export const handler: Handler = async function () {
       "SELECT * FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema'"
     );
 
+    console.log(res.rows);
+
     await client.end();
 
     return {
       statusCode: 200,
       headers: { "Content-Type": "text/plain" },
-      body: res.rows,
+      body: JSON.stringify(res.rows),
     };
   } catch (err) {
     console.log(err);
