@@ -1,14 +1,45 @@
-# Welcome to your CDK TypeScript project
+# Resports AWS CDK
 
-This is a blank project for CDK development with TypeScript.
+### Deploying to AWS environment
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+First, clone the repository
 
-## Useful commands
+```
+git clone git@github.com:daniel-moderiano/resports-aws-cdk.git
+```
 
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `cdk deploy`      deploy this stack to your default AWS account/region
-* `cdk diff`        compare deployed stack with current state
-* `cdk synth`       emits the synthesized CloudFormation template
+Inside the root directory, install all dependencies with npm
+
+```
+npm install
+```
+
+Next, create a `.env` file and include the AWS environment identifiers. The initial CloudFormation deployment will occur in the environment specified here. We must also specify initial database parameters. To avoid exposing the password in your CDK stack, you can opt to use Secrets Manager instead of simple environment variables. You won't know the database host until post-deployment, so any placeholder can be used here.
+
+```
+AWS_ACCOUNT=accountId
+AWS_REGION=region
+
+DATABASE_PASSWORD=password
+DATABASE_USER=user
+DATABASE_NAME=databaseName
+DATABASE_HOST=placeholder
+```
+
+We can now deploy the initial infrastructure. Note the AWS CLI profile must match that specified by the `.env` config from the previous step.
+
+```
+cdk deploy
+```
+
+With the initial infrastructure deployed, we can now update the database host environment variable, and redeploy.
+
+```
+DATABASE_HOST=databaseEndpoint
+
+cdk deploy
+```
+
+The deployment creates a database initialiser lambda function. This should be run via CLI or AWS console using an API Gateway Proxy test event. Only run this once on intial setup as it will **fully erase the database**.
+
+You should now have a complete infrastructure setup, including database table setup!
