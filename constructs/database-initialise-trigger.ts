@@ -15,7 +15,7 @@ export class DatabaseInitialiseTrigger extends Construct {
   constructor(scope: Construct, id: string, props: InitialiserProps) {
     super(scope, id);
 
-    const upsertUser = new NodejsFunction(this, "DatabaseInitialiser", {
+    const initialiseDatabase = new NodejsFunction(this, "DatabaseInitialiser", {
       entry: join(__dirname, "/../lambdas", "initialiseDatabase.ts"),
       vpc: props.vpc,
       vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
@@ -30,7 +30,7 @@ export class DatabaseInitialiseTrigger extends Construct {
     });
 
     const trigger = new triggers.Trigger(this, "DatabaseInitialiseTrigger", {
-      handler: upsertUser,
+      handler: initialiseDatabase,
       executeAfter: [props.databaseContstruct],
       executeOnHandlerChange: true,
     });
