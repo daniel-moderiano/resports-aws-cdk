@@ -7,6 +7,7 @@ import { UserApiRoutes } from "../constructs/user-api-routes";
 import { SavedChannelApiRoutes } from "../constructs/saved-channels-api-routes";
 import { VPC } from "../constructs/vpc";
 import { PostgresDatabase } from "../constructs/database";
+import { DatabaseInitialiseTrigger } from "../constructs/database-initialise-trigger";
 
 export class ResportsAwsCdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -45,6 +46,11 @@ export class ResportsAwsCdkStack extends cdk.Stack {
     new SavedChannelApiRoutes(this, "SavedChannelApiRoutes", {
       httpApi,
       authorizer,
+    });
+
+    new DatabaseInitialiseTrigger(this, "DatabaseInitialiser", {
+      vpc: vpc.vpc,
+      databaseContstruct: database,
     });
 
     new cdk.CfnOutput(this, "apiUrl", {

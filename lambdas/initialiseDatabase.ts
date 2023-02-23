@@ -13,7 +13,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     });
     await client.connect();
     const res = await client.query("SELECT $1::text as message", [
-      "Hello world!",
+      "Hello from the initialiser!",
     ]);
     console.log(res.rows[0].message); // Hello world!
     await client.end();

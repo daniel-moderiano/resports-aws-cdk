@@ -32,7 +32,7 @@ export class DatabaseInitialiseTrigger extends Construct {
     const trigger = new triggers.Trigger(this, "DatabaseInitialiseTrigger", {
       handler: upsertUser,
       executeAfter: [props.databaseContstruct],
-      executeOnHandlerChange: false,
+      executeOnHandlerChange: true,
     });
   }
 }
