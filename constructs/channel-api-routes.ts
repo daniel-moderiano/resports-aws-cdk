@@ -49,6 +49,7 @@ export class ChannelApiRoutes extends Construct {
         DATABASE_USER: env.DATABASE_USER,
       },
       timeout: Duration.seconds(30),
+
       ...nodeJsFunctionProps,
     });
 
