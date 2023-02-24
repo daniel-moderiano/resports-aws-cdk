@@ -1,13 +1,13 @@
-import { Client } from "pg";
+import { Client, Pool } from "pg";
 
-export const dropExistingTables = async (database: Client) => {
+export const dropExistingTables = async (database: Client | Pool) => {
   // Saved channels table connects the other tables, and must be dropped first
   await database.query("DROP TABLE IF EXISTS saved_channels;");
   await database.query("DROP TABLE IF EXISTS channels;");
   await database.query("DROP TABLE IF EXISTS users;");
 };
 
-export const createNewTables = async (database: Client) => {
+export const createNewTables = async (database: Client | Pool) => {
   await database.query(`
       CREATE TABLE IF NOT EXISTS channels (
         channel_id TEXT NOT NULL PRIMARY KEY,
