@@ -1,3 +1,5 @@
+import { Client, Pool } from "pg";
+
 export interface APIRequestBody {
   user?: User;
 }
@@ -19,3 +21,5 @@ export interface User {
   email_verified: boolean;
   user_id: string;
 }
+
+export type Database = Client | Pool;
