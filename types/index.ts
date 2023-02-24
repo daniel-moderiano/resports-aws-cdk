@@ -1,0 +1,21 @@
+export interface APIRequestBody {
+  user?: User;
+}
+
+// Database column/table type definitions. Expect these typings when interacting with database queries.
+export interface Channel {
+  channel_id: string;
+  platform: "youtube" | "twitch";
+}
+
+export interface SavedChannel {
+  user_id: string;
+  channel_id: string;
+}
+
+export interface User {
+  name: string;
+  email: string;
+  email_verified: boolean;
+  user_id: string;
+}
