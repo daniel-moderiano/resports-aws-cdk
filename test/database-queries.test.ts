@@ -1,5 +1,9 @@
 import { testPool } from "../config/database";
-import { deleteChannel, insertChannel } from "../helpers/databaseQueries";
+import {
+  deleteChannel,
+  insertChannel,
+  selectAllFromTable,
+} from "../helpers/databaseQueries";
 import { createNewTables, dropExistingTables } from "../helpers/initdb";
 import { Channel } from "../types";
 
@@ -66,6 +70,11 @@ describe("Channel table queries", () => {
     await insertChannel(testPool, testChannel);
 
     const result = await testPool.query("SELECT * FROM channels");
+    expect(result.rowCount).toEqual(1);
+  });
+
+  it("selects all rows from the table", async () => {
+    const result = await selectAllFromTable(testPool, "channels");
     expect(result.rowCount).toEqual(1);
   });
 
