@@ -1,5 +1,5 @@
 import { testPool } from "../config/database";
-import { insertChannel } from "../helpers/databaseQueries";
+import { deleteChannel, insertChannel } from "../helpers/databaseQueries";
 import { createNewTables, dropExistingTables } from "../helpers/initdb";
 import { Channel } from "../types";
 
@@ -68,11 +68,11 @@ describe("Channel table queries", () => {
     const result = await testPool.query("SELECT * FROM channels");
     expect(result.rowCount).toEqual(1);
   });
-});
 
-describe("User table queries", () => {
-  beforeAll(async () => {
-    await dropExistingTables(testPool);
-    await createNewTables(testPool);
+  it("deletes an existing channel", async () => {
+    await deleteChannel(testPool, "1234");
+
+    const result = await testPool.query("SELECT * FROM channels");
+    expect(result.rowCount).toEqual(0);
   });
 });
