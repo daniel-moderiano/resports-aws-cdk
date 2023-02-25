@@ -69,3 +69,10 @@ describe("Channel table queries", () => {
     expect(result.rowCount).toEqual(1);
   });
 });
+
+describe("User table queries", () => {
+  beforeAll(async () => {
+    await dropExistingTables(testPool);
+    await createNewTables(testPool);
+  });
+});
