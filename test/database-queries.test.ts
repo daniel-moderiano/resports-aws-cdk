@@ -85,3 +85,11 @@ describe("Channel table queries", () => {
     expect(result.rowCount).toEqual(0);
   });
 });
+
+describe("Users table queries", () => {
+  // TODO
+});
+
+describe("Saved_channels table queries", () => {
+  // TODO
+});
