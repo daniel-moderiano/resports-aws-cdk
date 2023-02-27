@@ -1,11 +1,15 @@
 import { testPool } from "../config/database";
 import {
+  deleteSavedChannel,
   deleteUser,
   insertChannel,
+  insertSavedChannel,
+  selectSavedChannel,
+  selectUserSavedChannels,
   upsertUser,
 } from "../helpers/databaseQueries";
 import { createNewTables, dropExistingTables } from "../helpers/initdb";
-import { Channel, User } from "../types";
+import { Channel, SavedChannel, User } from "../types";
 
 // Reset the database to baseline empty tables
 beforeAll(async () => {
@@ -16,6 +20,38 @@ beforeAll(async () => {
 afterAll(async () => {
   await testPool.end();
 });
+
+const testUser: User = {
+  user_id: "1132424242",
+  email: "test@gmail.com",
+  email_verified: false,
+};
+
+const testUserUpdated: User = {
+  ...testUser,
+  email_verified: true,
+};
+
+const testChannel: Channel = {
+  channel_id: "1234",
+  platform: "twitch",
+};
+
+const testSavedChannel: SavedChannel = {
+  user_id: "1132424242",
+  channel_id: "1234",
+};
+
+const secondChannel: Channel = {
+  channel_id: "5678",
+  platform: "youtube",
+};
+
+const secondUser: User = {
+  user_id: "6543754732",
+  email: "example@gmail.com",
+  email_verified: true,
+};
 
 describe("Database initialisation", () => {
   beforeAll(async () => {
@@ -51,11 +87,6 @@ describe("Channel table queries", () => {
     await createNewTables(testPool);
   });
 
-  const testChannel: Channel = {
-    channel_id: "1234",
-    platform: "twitch",
-  };
-
   it("inserts a new channel into the table", async () => {
     await insertChannel(testPool, testChannel);
 
@@ -79,17 +110,6 @@ describe("Users table queries", () => {
     await dropExistingTables(testPool);
     await createNewTables(testPool);
   });
-
-  const testUser: User = {
-    user_id: "1132424242",
-    email: "test@gmail.com",
-    email_verified: false,
-  };
-
-  const testUserUpdated: User = {
-    ...testUser,
-    email_verified: true,
-  };
 
   it("inserts a new user into the table", async () => {
     await upsertUser(testPool, testUser);
@@ -118,5 +138,101 @@ describe("Users table queries", () => {
 });
 
 describe("Saved_channels table queries", () => {
-  // TODO
+  beforeAll(async () => {
+    await dropExistingTables(testPool);
+    await createNewTables(testPool);
+
+    // Inserting saved channels requires existing foreign keys for user and channel IDs
+    await insertChannel(testPool, testChannel);
+    await upsertUser(testPool, testUser);
+  });
+
+  it("inserts a new saved channel into the table", async () => {
+    await insertSavedChannel(
+      testPool,
+      testSavedChannel.user_id,
+      testSavedChannel.channel_id
+    );
+
+    const result = await testPool.query("SELECT * FROM saved_channels");
+    expect(result.rows).toEqual([testSavedChannel]);
+  });
+
+  it("selects a single channel from the table", async () => {
+    const result = await selectSavedChannel(
+      testPool,
+      testSavedChannel.user_id,
+      testSavedChannel.channel_id
+    );
+
+    expect(result.rows).toEqual([testSavedChannel]);
+  });
+
+  it("does not insert duplicate saved channels", async () => {
+    await insertSavedChannel(
+      testPool,
+      testSavedChannel.user_id,
+      testSavedChannel.channel_id
+    );
+
+    const result = await testPool.query("SELECT * FROM saved_channels");
+    expect(result.rowCount).toEqual(1);
+  });
+
+  it("inserts new saved channel when user_id is unique but channel_id is not", async () => {
+    // Insert a unique user
+    await upsertUser(testPool, secondUser);
+
+    await insertSavedChannel(
+      testPool,
+      secondUser.user_id,
+      testChannel.channel_id
+    );
+
+    const result = await selectSavedChannel(
+      testPool,
+      secondUser.user_id,
+      testChannel.channel_id
+    );
+
+    expect(result.rowCount).toBe(1);
+  });
+
+  it("inserts new saved channel when channel_id is unique but user_id is not", async () => {
+    // Insert a unique channel
+    await insertChannel(testPool, secondChannel);
+
+    await insertSavedChannel(
+      testPool,
+      testUser.user_id,
+      secondChannel.channel_id
+    );
+
+    const result = await selectSavedChannel(
+      testPool,
+      testUser.user_id,
+      secondChannel.channel_id
+    );
+
+    expect(result.rowCount).toBe(1);
+  });
+
+  it("selects all saved channels belonging to a single user", async () => {
+    const result = await selectUserSavedChannels(testPool, testUser.user_id);
+
+    expect(result.rows).toEqual([
+      { channel_id: testChannel.channel_id },
+      { channel_id: secondChannel.channel_id },
+    ]);
+  });
+
+  it("deletes a saved channel", async () => {
+    const result = await deleteSavedChannel(
+      testPool,
+      secondUser.user_id,
+      testChannel.channel_id
+    );
+
+    expect(result.rowCount).toBe(1);
+  });
 });
