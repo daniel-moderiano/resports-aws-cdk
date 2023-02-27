@@ -17,9 +17,9 @@ export const createNewTables = async (database: Client | Pool) => {
 
   await database.query(`
       CREATE TABLE IF NOT EXISTS users (
-        user_id TEXT UNIQUE NOT NULL PRIMARY KEY,
+        username TEXT UNIQUE NOT NULL PRIMARY KEY,
         email TEXT UNIQUE NOT NULL,
-        email_verified BOOLEAN NOT NULL,
+        created_on TIMESTAMP NOT NULL
       );
     `);
 

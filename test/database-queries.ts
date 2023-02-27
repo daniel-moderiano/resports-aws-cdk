@@ -81,6 +81,6 @@ describe("Users table queries", () => {
   // TODO
 });
 
-describe("Saved channels table queries", () => {
+describe("Saved_channels table queries", () => {
   // TODO
 });
