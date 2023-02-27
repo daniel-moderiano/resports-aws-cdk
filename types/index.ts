@@ -16,7 +16,6 @@ export interface SavedChannel {
 }
 
 export interface User {
-  name: string;
   email: string;
   email_verified: boolean;
   user_id: string;
