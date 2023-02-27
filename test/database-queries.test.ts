@@ -1,7 +1,11 @@
 import { testPool } from "../config/database";
-import { insertChannel } from "../helpers/databaseQueries";
+import {
+  deleteUser,
+  insertChannel,
+  upsertUser,
+} from "../helpers/databaseQueries";
 import { createNewTables, dropExistingTables } from "../helpers/initdb";
-import { Channel } from "../types";
+import { Channel, User } from "../types";
 
 // Reset the database to baseline empty tables
 beforeAll(async () => {
@@ -70,15 +74,47 @@ describe("Channel table queries", () => {
   });
 });
 
-describe("User table queries", () => {
+describe("Users table queries", () => {
   beforeAll(async () => {
     await dropExistingTables(testPool);
     await createNewTables(testPool);
   });
-});
 
-describe("Users table queries", () => {
-  // TODO
+  const testUser: User = {
+    user_id: "1132424242",
+    email: "test@gmail.com",
+    email_verified: false,
+  };
+
+  const testUserUpdated: User = {
+    ...testUser,
+    email_verified: true,
+  };
+
+  it("inserts a new user into the table", async () => {
+    await upsertUser(testPool, testUser);
+
+    const result = await testPool.query(
+      "SELECT * FROM users WHERE user_id=$1",
+      [testUser.user_id]
+    );
+    expect(result.rows).toEqual([testUser]);
+  });
+
+  it("updates a user that already exists in the table", async () => {
+    await upsertUser(testPool, testUserUpdated);
+
+    const result = await testPool.query("SELECT * FROM users");
+
+    expect(result.rows).toEqual([testUserUpdated]);
+  });
+
+  it("deletes an existing user", async () => {
+    await deleteUser(testPool, testUser.user_id);
+
+    const result = await testPool.query("SELECT * FROM channels");
+    expect(result.rowCount).toEqual(0);
+  });
 });
 
 describe("Saved_channels table queries", () => {
