@@ -17,19 +17,19 @@ export const createNewTables = async (database: Client | Pool) => {
 
   await database.query(`
       CREATE TABLE IF NOT EXISTS users (
-        username TEXT UNIQUE NOT NULL PRIMARY KEY,
+        user_id TEXT UNIQUE NOT NULL PRIMARY KEY,
         email TEXT UNIQUE NOT NULL,
-        created_on TIMESTAMP NOT NULL
+        email_verified BOOLEAN NOT NULL
       );
     `);
 
   await database.query(`
       CREATE TABLE IF NOT EXISTS saved_channels (
-        username TEXT NOT NULL,
+        user_id TEXT NOT NULL,
         channel_id TEXT NOT NULL,
-        PRIMARY KEY (username, channel_id),
-        FOREIGN KEY (username)
-          REFERENCES users (username),
+        PRIMARY KEY (user_id, channel_id),
+        FOREIGN KEY (user_id)
+          REFERENCES users (user_id),
         FOREIGN KEY (channel_id)
           REFERENCES channels (channel_id)
       );
