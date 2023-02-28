@@ -5,6 +5,7 @@ import {
   filterByAssociatedSavedChannels,
   insertChannel,
   insertSavedChannel,
+  removeAllUserSavedChannels,
   safelyRemoveSavedChannel,
   selectAllFromTable,
   selectSavedChannelByUserAndChannel,
@@ -360,5 +361,53 @@ describe("Safely removing saved channels", () => {
 
     expect(channelsResult.rowCount).toBe(1);
     expect(savedChannelsResult.rowCount).toBe(0);
+  });
+});
+
+describe("Removing all of a user's saved channels", () => {
+  beforeAll(async () => {
+    await dropExistingTables(testPool);
+    await createNewTables(testPool);
+
+    await insertChannel(testPool, testChannel);
+    await insertChannel(testPool, secondChannel);
+    await upsertUser(testPool, testUser);
+    await upsertUser(testPool, secondUser);
+
+    await insertSavedChannel(
+      testPool,
+      testUser.user_id,
+      testChannel.channel_id
+    );
+
+    await insertSavedChannel(
+      testPool,
+      testUser.user_id,
+      secondChannel.channel_id
+    );
+
+    await insertSavedChannel(
+      testPool,
+      secondUser.user_id,
+      testChannel.channel_id
+    );
+  });
+
+  it("removes all saved channels belonging to the user", async () => {
+    await removeAllUserSavedChannels(testPool, testUser.user_id);
+
+    const result = await selectSavedChannelsByUserId(
+      testPool,
+      testUser.user_id
+    );
+    expect(result.rowCount).toBe(0);
+  });
+
+  it("safely removes and retains channels depending on remaining saved channels", async () => {
+    await removeAllUserSavedChannels(testPool, testUser.user_id);
+
+    const result = await selectAllFromTable(testPool, "channels");
+
+    expect(result.rows).toBe([{ testChannel }]);
   });
 });

@@ -111,8 +111,6 @@ export const filterByAssociatedSavedChannels = async (
   return channelsWithNoAssociatedSavedChannel;
 };
 
-// TODO: When deleting a saved channel, check if any other saved channels reference that channel_id of the deleted saved channel. If no other references exist, the channel should be deleted from the channels table
-
 export const safelyRemoveSavedChannel = async (
   database: Database,
   userId: string,
@@ -133,3 +131,24 @@ export const safelyRemoveSavedChannel = async (
 };
 
 // TODO: When deleting a user, all of the user's saved channels should be deleted. For each channel deleted, we should check for any further saved channels referencing that channel_id, and if none exist, it should be removed.
+
+export const removeAllUserSavedChannels = async (
+  database: Database,
+  userId: string
+) => {
+  type ChannelReturnType = {
+    channel_id: string;
+  };
+
+  const result = await selectSavedChannelsByUserId(database, userId);
+
+  const userSavedChannels = result.rows.map(
+    (channel: ChannelReturnType) => channel.channel_id
+  );
+
+  for (let i = 0; i < userSavedChannels.length; i++) {
+    await safelyRemoveSavedChannel(database, userId, userSavedChannels[i]);
+  }
+
+  return;
+};
