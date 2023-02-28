@@ -253,7 +253,7 @@ describe("Saved_channels table queries", () => {
   });
 });
 
-describe("Compound and advanced queries", () => {
+describe("Channel ID filtering", () => {
   beforeAll(async () => {
     await dropExistingTables(testPool);
     await createNewTables(testPool);
@@ -298,6 +298,17 @@ describe("Compound and advanced queries", () => {
     ]);
 
     expect(result).toEqual([secondChannel.channel_id]);
+  });
+});
+
+describe("Safely removing saved channels", () => {
+  beforeAll(async () => {
+    await dropExistingTables(testPool);
+    await createNewTables(testPool);
+
+    // Inserting saved channels requires existing foreign keys for user and channel IDs
+    await insertChannel(testPool, testChannel);
+    await upsertUser(testPool, testUser);
   });
 
   it("removes saved channel and safely removes associated channel", async () => {
