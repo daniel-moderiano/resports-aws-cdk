@@ -22,3 +22,5 @@ export interface User {
 }
 
 export type Database = Client | Pool;
+
+export type Table = "users" | "channels" | "saved_channels";

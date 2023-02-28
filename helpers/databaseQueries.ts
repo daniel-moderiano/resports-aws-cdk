@@ -1,10 +1,10 @@
-import { Channel, Database, User } from "../types";
+import { Channel, Database, Table, User } from "../types";
 
 // GENERAL QUERIES
 
 export const selectAllFromTable = async function (
   database: Database,
-  tableName: string
+  tableName: Table
 ) {
   return database.query(`SELECT * FROM ${tableName}`);
 };
