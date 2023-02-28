@@ -91,7 +91,7 @@ export const deleteSavedChannel = async (
   );
 };
 
-// COMPOUND QUERIES
+// COMPOUND/ADVANCED QUERIES
 
 export const filterByAssociatedSavedChannels = async (
   database: Database,
@@ -129,8 +129,6 @@ export const safelyRemoveSavedChannel = async (
 
   return;
 };
-
-// TODO: When deleting a user, all of the user's saved channels should be deleted. For each channel deleted, we should check for any further saved channels referencing that channel_id, and if none exist, it should be removed.
 
 export const removeAllUserSavedChannels = async (
   database: Database,

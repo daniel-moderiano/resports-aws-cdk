@@ -408,6 +408,6 @@ describe("Removing all of a user's saved channels", () => {
 
     const result = await selectAllFromTable(testPool, "channels");
 
-    expect(result.rows).toBe([{ testChannel }]);
+    expect(result.rows).toEqual([testChannel]);
   });
 });
