@@ -2,6 +2,7 @@ import { testPool } from "../config/database";
 import {
   deleteSavedChannel,
   deleteUser,
+  filterByExistingSavedChannels,
   insertChannel,
   insertSavedChannel,
   selectSavedChannel,
@@ -234,5 +235,38 @@ describe("Saved_channels table queries", () => {
     );
 
     expect(result.rowCount).toBe(1);
+  });
+});
+
+describe("Compound and advanced queries", () => {
+  beforeAll(async () => {
+    await dropExistingTables(testPool);
+    await createNewTables(testPool);
+
+    // Inserting saved channels requires existing foreign keys for user and channel IDs
+    await insertChannel(testPool, testChannel);
+    await upsertUser(testPool, testUser);
+  });
+
+  it("returns channel ID(s) that do not exist in the saved channel table", async () => {
+    const result = await filterByExistingSavedChannels(testPool, [
+      secondChannel.channel_id,
+    ]);
+
+    expect(result).toEqual([secondChannel.channel_id]);
+  });
+
+  it("filters out a channel ID that still exists in the channel table", async () => {
+    await insertSavedChannel(
+      testPool,
+      testSavedChannel.user_id,
+      testSavedChannel.channel_id
+    );
+
+    const result = await filterByExistingSavedChannels(testPool, [
+      secondChannel.channel_id,
+    ]);
+
+    expect(result).toEqual([secondChannel.channel_id]);
   });
 });

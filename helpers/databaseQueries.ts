@@ -1,11 +1,15 @@
 import { Channel, Database, User } from "../types";
 
+// GENERAL QUERIES
+
 export const selectAllFromTable = async function (
   database: Database,
   tableName: string
 ) {
   return database.query(`SELECT * FROM ${tableName}`);
 };
+
+// CHANNEL TABLE QUERIES
 
 export const insertChannel = async (database: Database, channel: Channel) => {
   return database.query(
@@ -20,6 +24,8 @@ export const deleteChannel = async (database: Database, channelId: string) => {
   ]);
 };
 
+// USER TABLE QUERIES
+
 export const upsertUser = async (database: Database, user: User) => {
   return database.query(
     "INSERT INTO users (user_id, email, email_verified) VALUES ($1, $2, $3) ON CONFLICT (user_id) DO UPDATE SET email_verified = $3",
@@ -30,6 +36,8 @@ export const upsertUser = async (database: Database, user: User) => {
 export const deleteUser = async (database: Database, userId: string) => {
   return database.query("DELETE FROM users WHERE user_id=$1", [userId]);
 };
+
+// SAVED CHANNELS TABLE QUERIES
 
 export const selectSavedChannel = async (
   database: Database,
@@ -73,3 +81,18 @@ export const deleteSavedChannel = async (
     [userId, channelId]
   );
 };
+
+// COMPOUND QUERIES
+
+// TODO: A query that filters a list of channel_ids by whether they exist in the saved_channels table
+
+export const filterByExistingSavedChannels = async (
+  database: Database,
+  channelIds: string[]
+) => {
+  return channelIds;
+};
+
+// TODO: When deleting a saved channel, check if any other saved channels reference that channel_id of the deleted saved channel. If no other references exist, the channel should be deleted from the channels table
+
+// TODO: When deleting a user, all of the user's saved channels should be deleted. For each channel deleted, we should check for any further saved channels referencing that channel_id, and if none exist, it should be removed.
