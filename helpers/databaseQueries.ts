@@ -39,7 +39,7 @@ export const deleteUser = async (database: Database, userId: string) => {
 
 // SAVED CHANNELS TABLE QUERIES
 
-export const selectSavedChannel = async (
+export const selectSavedChannelByUserAndChannel = async (
   database: Database,
   userId: string,
   channelId: string
@@ -50,7 +50,16 @@ export const selectSavedChannel = async (
   );
 };
 
-export const selectUserSavedChannels = async (
+export const selectSavedChannelsByChannelId = async (
+  database: Database,
+  channelId: string
+) => {
+  return database.query("SELECT * FROM saved_channels WHERE channel_id=$1", [
+    channelId,
+  ]);
+};
+
+export const selectSavedChannelsByUserId = async (
   database: Database,
   userId: string
 ) => {
@@ -86,11 +95,22 @@ export const deleteSavedChannel = async (
 
 // TODO: A query that filters a list of channel_ids by whether they exist in the saved_channels table
 
-export const filterByExistingSavedChannels = async (
+export const filterByAssociatedSavedChannels = async (
   database: Database,
   channelIds: string[]
 ) => {
-  return channelIds;
+  const channelsWithNoAssociatedSavedChannel: string[] = [];
+  for (let i = 0; i < channelIds.length; i++) {
+    const result = await selectSavedChannelsByChannelId(
+      database,
+      channelIds[i]
+    );
+    if (result.rowCount === 0) {
+      channelsWithNoAssociatedSavedChannel.push(channelIds[i]);
+    }
+  }
+
+  return channelsWithNoAssociatedSavedChannel;
 };
 
 // TODO: When deleting a saved channel, check if any other saved channels reference that channel_id of the deleted saved channel. If no other references exist, the channel should be deleted from the channels table

@@ -2,11 +2,12 @@ import { testPool } from "../config/database";
 import {
   deleteSavedChannel,
   deleteUser,
-  filterByExistingSavedChannels,
+  filterByAssociatedSavedChannels,
   insertChannel,
   insertSavedChannel,
-  selectSavedChannel,
-  selectUserSavedChannels,
+  selectSavedChannelByUserAndChannel,
+  selectSavedChannelsByChannelId,
+  selectSavedChannelsByUserId,
   upsertUser,
 } from "../helpers/databaseQueries";
 import { createNewTables, dropExistingTables } from "../helpers/initdb";
@@ -159,10 +160,19 @@ describe("Saved_channels table queries", () => {
     expect(result.rows).toEqual([testSavedChannel]);
   });
 
-  it("selects a single channel from the table", async () => {
-    const result = await selectSavedChannel(
+  it("selects a single channel from the table using composite key", async () => {
+    const result = await selectSavedChannelByUserAndChannel(
       testPool,
       testSavedChannel.user_id,
+      testSavedChannel.channel_id
+    );
+
+    expect(result.rows).toEqual([testSavedChannel]);
+  });
+
+  it("selects a single channel from the table using channel ID", async () => {
+    const result = await selectSavedChannelsByChannelId(
+      testPool,
       testSavedChannel.channel_id
     );
 
@@ -190,7 +200,7 @@ describe("Saved_channels table queries", () => {
       testChannel.channel_id
     );
 
-    const result = await selectSavedChannel(
+    const result = await selectSavedChannelByUserAndChannel(
       testPool,
       secondUser.user_id,
       testChannel.channel_id
@@ -209,7 +219,7 @@ describe("Saved_channels table queries", () => {
       secondChannel.channel_id
     );
 
-    const result = await selectSavedChannel(
+    const result = await selectSavedChannelByUserAndChannel(
       testPool,
       testUser.user_id,
       secondChannel.channel_id
@@ -219,7 +229,10 @@ describe("Saved_channels table queries", () => {
   });
 
   it("selects all saved channels belonging to a single user", async () => {
-    const result = await selectUserSavedChannels(testPool, testUser.user_id);
+    const result = await selectSavedChannelsByUserId(
+      testPool,
+      testUser.user_id
+    );
 
     expect(result.rows).toEqual([
       { channel_id: testChannel.channel_id },
@@ -248,22 +261,37 @@ describe("Compound and advanced queries", () => {
     await upsertUser(testPool, testUser);
   });
 
-  it("returns channel ID(s) that do not exist in the saved channel table", async () => {
-    const result = await filterByExistingSavedChannels(testPool, [
+  it("returns a single channel ID that does not exist in the saved channels table", async () => {
+    const result = await filterByAssociatedSavedChannels(testPool, [
       secondChannel.channel_id,
     ]);
 
     expect(result).toEqual([secondChannel.channel_id]);
   });
 
-  it("filters out a channel ID that still exists in the channel table", async () => {
+  it("filters out a single channel ID that still exists in the saved channels table", async () => {
     await insertSavedChannel(
       testPool,
       testSavedChannel.user_id,
       testSavedChannel.channel_id
     );
 
-    const result = await filterByExistingSavedChannels(testPool, [
+    const result = await filterByAssociatedSavedChannels(testPool, [
+      testSavedChannel.channel_id,
+    ]);
+
+    expect(result).toEqual([]);
+  });
+
+  it("handles a mixed input of channel IDs", async () => {
+    await insertSavedChannel(
+      testPool,
+      testSavedChannel.user_id,
+      testSavedChannel.channel_id
+    );
+
+    const result = await filterByAssociatedSavedChannels(testPool, [
+      testSavedChannel.channel_id,
       secondChannel.channel_id,
     ]);
 
