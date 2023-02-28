@@ -93,8 +93,6 @@ export const deleteSavedChannel = async (
 
 // COMPOUND QUERIES
 
-// TODO: A query that filters a list of channel_ids by whether they exist in the saved_channels table
-
 export const filterByAssociatedSavedChannels = async (
   database: Database,
   channelIds: string[]
@@ -114,5 +112,13 @@ export const filterByAssociatedSavedChannels = async (
 };
 
 // TODO: When deleting a saved channel, check if any other saved channels reference that channel_id of the deleted saved channel. If no other references exist, the channel should be deleted from the channels table
+
+export const safelyRemoveSavedChannel = async (
+  database: Database,
+  userId: string,
+  channelId: string
+) => {
+  return;
+};
 
 // TODO: When deleting a user, all of the user's saved channels should be deleted. For each channel deleted, we should check for any further saved channels referencing that channel_id, and if none exist, it should be removed.

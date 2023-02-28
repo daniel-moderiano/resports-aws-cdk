@@ -5,6 +5,8 @@ import {
   filterByAssociatedSavedChannels,
   insertChannel,
   insertSavedChannel,
+  safelyRemoveSavedChannel,
+  selectAllFromTable,
   selectSavedChannelByUserAndChannel,
   selectSavedChannelsByChannelId,
   selectSavedChannelsByUserId,
@@ -296,5 +298,55 @@ describe("Compound and advanced queries", () => {
     ]);
 
     expect(result).toEqual([secondChannel.channel_id]);
+  });
+
+  it("removes saved channel and safely removes associated channel", async () => {
+    await safelyRemoveSavedChannel(
+      testPool,
+      testSavedChannel.user_id,
+      testSavedChannel.channel_id
+    );
+
+    const channelsResult = await selectAllFromTable(testPool, "channels");
+    const savedChannelsResult = await selectAllFromTable(
+      testPool,
+      "saved_channels"
+    );
+
+    expect(channelsResult.rowCount).toBe(0);
+    expect(savedChannelsResult.rowCount).toBe(0);
+  });
+
+  it("removes saved channel but leaves channel intact when it is referenced in other saved channels", async () => {
+    await upsertUser(testPool, testUser);
+    await upsertUser(testPool, secondUser);
+
+    await insertSavedChannel(
+      testPool,
+      testUser.user_id,
+      testChannel.channel_id
+    );
+
+    await insertSavedChannel(
+      testPool,
+      secondUser.user_id,
+      testChannel.channel_id
+    );
+
+    await safelyRemoveSavedChannel(
+      testPool,
+      testUser.user_id,
+      testChannel.channel_id
+    );
+
+    const channelsResult = await selectAllFromTable(testPool, "channels");
+    const savedChannelsResult = await selectSavedChannelByUserAndChannel(
+      testPool,
+      testUser.user_id,
+      testChannel.channel_id
+    );
+
+    expect(channelsResult.rowCount).toBe(1);
+    expect(savedChannelsResult.rowCount).toBe(0);
   });
 });
