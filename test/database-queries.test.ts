@@ -320,6 +320,7 @@ describe("Compound and advanced queries", () => {
   it("removes saved channel but leaves channel intact when it is referenced in other saved channels", async () => {
     await upsertUser(testPool, testUser);
     await upsertUser(testPool, secondUser);
+    await insertChannel(testPool, testChannel);
 
     await insertSavedChannel(
       testPool,
