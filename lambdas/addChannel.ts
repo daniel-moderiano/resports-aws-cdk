@@ -1,29 +1,29 @@
 import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { is } from "superstruct";
-import { SavedChannelStruct } from "../types";
-import { safelyRemoveSavedChannel } from "../helpers/databaseQueries";
+import { ChannelStruct } from "../types";
+import { insertChannel } from "../helpers/databaseQueries";
 import { Client } from "pg";
 import { databaseConfig } from "../config/database";
 
 export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
-  const savedChannelInformation = event.queryStringParameters;
-
-  if (!savedChannelInformation) {
+  if (!event.body) {
     return JSON.stringify({
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Missing user and/or channel information.",
+        message: "Bad request. Missing request body.",
       },
     });
   }
 
-  if (!is(savedChannelInformation, SavedChannelStruct)) {
+  const requestBody = JSON.parse(event.body);
+
+  if (!is(requestBody, ChannelStruct)) {
     return JSON.stringify({
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Invalid user and/or channel information.",
+        message: "Bad request. Invalid channel information.",
       },
     });
   }
@@ -39,11 +39,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   // The following code will throw a generic 500 internal server error. We might consider a try/catch, but I don't think we would handle the error any differently
   await client.connect();
 
-  const result = await safelyRemoveSavedChannel(
-    client,
-    savedChannelInformation.user_id,
-    savedChannelInformation.channel_id
-  );
+  await insertChannel(client, requestBody);
 
   await client.end();
 
@@ -51,10 +47,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     statusCode: 200,
     headers: { "Content-Type": "application/json" },
     body: {
-      message:
-        result.rowCount === 0
-          ? "No existing channel to delete"
-          : "Saved channel deleted",
+      message: "Channel added successfully",
     },
   });
 };

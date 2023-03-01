@@ -1,4 +1,4 @@
-import { testPool } from "../config/database";
+import { Pool } from "pg";
 import {
   deleteSavedChannel,
   deleteUser,
@@ -15,6 +15,12 @@ import {
 } from "../helpers/databaseQueries";
 import { createNewTables, dropExistingTables } from "../helpers/initdb";
 import { Channel, SavedChannel, User } from "../types";
+
+// Uses an in-memory Postgres database for testing
+const testPool = new Pool({
+  // DATABASE_URL will be automatically set during test setup by @databases/pg-test
+  connectionString: process.env.DATABASE_URL,
+});
 
 // Reset the database to baseline empty tables
 beforeAll(async () => {

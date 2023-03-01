@@ -1,30 +1,35 @@
 import { Handler } from "aws-lambda";
 import { Client } from "pg";
-import { env } from "../config/database";
+import { databaseConfig } from "../config/database";
+import { selectAllFromTable } from "../helpers/databaseQueries";
 
 export const handler: Handler = async function () {
   try {
     const client = new Client({
-      user: env.DATABASE_USER,
-      host: env.DATABASE_HOST,
-      database: env.DATABASE_NAME,
-      password: env.DATABASE_PASSWORD,
+      user: databaseConfig.DATABASE_USER,
+      host: databaseConfig.DATABASE_HOST,
+      database: databaseConfig.DATABASE_NAME,
+      password: databaseConfig.DATABASE_PASSWORD,
       port: 5432,
     });
     await client.connect();
 
-    const res = await client.query(
-      "SELECT * FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema'"
-    );
+    const users = await selectAllFromTable(client, "users");
+    const channels = await selectAllFromTable(client, "channels");
+    const savedChannels = await selectAllFromTable(client, "saved_channels");
 
-    console.log(res.rows);
+    console.log(users.rows);
+
+    console.log(channels.rows);
+
+    console.log(savedChannels.rows);
 
     await client.end();
 
     return {
       statusCode: 200,
       headers: { "Content-Type": "text/plain" },
-      body: JSON.stringify(res.rows),
+      body: JSON.stringify(users.rows),
     };
   } catch (err) {
     console.log(err);

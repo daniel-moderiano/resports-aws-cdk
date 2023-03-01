@@ -117,7 +117,7 @@ export const safelyRemoveSavedChannel = async (
   channelId: string
 ) => {
   // Must remove the saved channel first, otherwise it will trigger a false positive during filtering in the next step
-  await deleteSavedChannel(database, userId, channelId);
+  const deletedResult = await deleteSavedChannel(database, userId, channelId);
 
   const channelsSafeToDelete = await filterByAssociatedSavedChannels(database, [
     channelId,
@@ -127,7 +127,7 @@ export const safelyRemoveSavedChannel = async (
     await deleteChannel(database, channelId);
   }
 
-  return;
+  return deletedResult;
 };
 
 export const removeAllUserSavedChannels = async (

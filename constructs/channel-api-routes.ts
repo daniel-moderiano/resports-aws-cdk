@@ -9,18 +9,14 @@ import { Construct } from "constructs";
 import { join } from "path";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import { SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
-import { env } from "../config/database";
+import { databaseConfig } from "../config/database";
 import { Duration } from "aws-cdk-lib";
 
 interface ChannelRoutesProps {
   httpApi: HttpApi;
   authorizer: HttpJwtAuthorizer;
-  vpc?: Vpc;
+  vpc: Vpc;
 }
-
-export const nodeJsFunctionProps: NodejsFunctionProps = {
-  runtime: lambda.Runtime.NODEJS_16_X, // execution environment
-};
 
 export class ChannelApiRoutes extends Construct {
   constructor(scope: Construct, id: string, props: ChannelRoutesProps) {
@@ -28,8 +24,16 @@ export class ChannelApiRoutes extends Construct {
 
     const { httpApi, authorizer, vpc } = props;
 
-    const upsertChannel = new NodejsFunction(this, "UpsertChannelHandler", {
-      entry: join(__dirname, "/../lambdas", "upsertChannel.ts"),
+    const nodeJsFunctionProps: NodejsFunctionProps = {
+      runtime: lambda.Runtime.NODEJS_16_X,
+      vpc: vpc,
+      vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
+      environment: databaseConfig,
+      timeout: Duration.seconds(30),
+    };
+
+    const addChannel = new NodejsFunction(this, "AddChannelHandler", {
+      entry: join(__dirname, "/../lambdas", "addChannel.ts"),
       ...nodeJsFunctionProps,
     });
 
@@ -40,16 +44,6 @@ export class ChannelApiRoutes extends Construct {
 
     const privateLambda = new NodejsFunction(this, "PrivateLambda", {
       entry: join(__dirname, "/../lambdas", "private.ts"),
-      vpc: vpc,
-      vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
-      environment: {
-        DATABASE_HOST: env.DATABASE_HOST,
-        DATABASE_NAME: env.DATABASE_NAME,
-        DATABASE_PASSWORD: env.DATABASE_PASSWORD,
-        DATABASE_USER: env.DATABASE_USER,
-      },
-      timeout: Duration.seconds(30),
-
       ...nodeJsFunctionProps,
     });
 
@@ -58,9 +52,9 @@ export class ChannelApiRoutes extends Construct {
       privateLambda
     );
 
-    const upsertChannelIntegration = new HttpLambdaIntegration(
-      "UpsertChannelIntegration",
-      upsertChannel
+    const addChannelIntegration = new HttpLambdaIntegration(
+      "AddChannelIntegration",
+      addChannel
     );
 
     const deleteChannelIntegration = new HttpLambdaIntegration(
@@ -69,14 +63,14 @@ export class ChannelApiRoutes extends Construct {
     );
 
     httpApi.addRoutes({
-      path: "/channels/{channelId}",
+      path: "/channels",
       methods: [HttpMethod.POST],
-      integration: upsertChannelIntegration,
+      integration: addChannelIntegration,
       authorizer,
     });
 
     httpApi.addRoutes({
-      path: "/channels/{channelId}",
+      path: "/channels/{channel_id}",
       methods: [HttpMethod.DELETE],
       integration: deleteChannelIntegration,
       authorizer,

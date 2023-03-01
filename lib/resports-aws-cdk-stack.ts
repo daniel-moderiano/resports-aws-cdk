@@ -7,7 +7,7 @@ import { UserApiRoutes } from "../constructs/user-api-routes";
 import { SavedChannelApiRoutes } from "../constructs/saved-channels-api-routes";
 import { VPC } from "../constructs/vpc";
 import { PostgresDatabase } from "../constructs/database";
-import { env } from "../config/database";
+import { databaseConfig } from "../config/database";
 import { SubnetType } from "aws-cdk-lib/aws-ec2";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { join } from "path";
@@ -42,12 +42,7 @@ export class ResportsAwsCdkStack extends cdk.Stack {
       entry: join(__dirname, "/../lambdas", "initialiseDatabase.ts"),
       vpc: vpc.vpc,
       vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
-      environment: {
-        DATABASE_HOST: env.DATABASE_HOST,
-        DATABASE_NAME: env.DATABASE_NAME,
-        DATABASE_PASSWORD: env.DATABASE_PASSWORD,
-        DATABASE_USER: env.DATABASE_USER,
-      },
+      environment: databaseConfig,
       timeout: Duration.seconds(30),
       runtime: lambda.Runtime.NODEJS_16_X,
     });
@@ -61,11 +56,13 @@ export class ResportsAwsCdkStack extends cdk.Stack {
     new UserApiRoutes(this, "UserApiRoutes", {
       httpApi,
       authorizer,
+      vpc: vpc.vpc,
     });
 
     new SavedChannelApiRoutes(this, "SavedChannelApiRoutes", {
       httpApi,
       authorizer,
+      vpc: vpc.vpc,
     });
 
     new cdk.CfnOutput(this, "apiUrl", {

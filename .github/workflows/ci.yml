@@ -1,0 +1,36 @@
+name: CI
+
+# Dummy env variables. These are required to avoid errors in files trying to access env variables
+env:
+  DATABASE_PASSWORD: pass
+  DATABASE_USER: user
+  DATABASE_NAME: name
+  DATABASE_HOST: host
+
+on:
+  # runs on pushes to the main branch
+  push:
+    branches: [main]
+  # also runs inside pull requests that target the main branch
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: "npm"
+      # install dependencies using clean-install command (preferred for CI environments)
+      - run: npm ci
+      # Run linting and formatting
+      - run: npm run lint
+      - run: npm run prettier
+      # verify that there are no type and build errors
+      - run: npm run build
+      # run tests with Jest
+      - run: npm run test:ci
