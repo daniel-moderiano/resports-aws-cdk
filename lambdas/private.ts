@@ -13,18 +13,51 @@ export const handler: Handler = async function () {
     });
     await client.connect();
 
-    const res = await client.query(
-      "SELECT * FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema'"
+    const users = await client.query(
+      `SELECT 
+      table_name, 
+      column_name, 
+      data_type 
+   FROM 
+      information_schema.columns
+   WHERE 
+      table_name = 'users'`
     );
 
-    console.log(res.rows);
+    console.log(users.rows);
+
+    const channels = await client.query(
+      `SELECT 
+      table_name, 
+      column_name, 
+      data_type 
+   FROM 
+      information_schema.columns
+   WHERE 
+      table_name = 'channels'`
+    );
+
+    console.log(channels.rows);
+
+    const savedChannels = await client.query(
+      `SELECT 
+      table_name, 
+      column_name, 
+      data_type 
+   FROM 
+      information_schema.columns
+   WHERE 
+      table_name = 'saved_channels'`
+    );
+
+    console.log(savedChannels.rows);
 
     await client.end();
 
     return {
       statusCode: 200,
       headers: { "Content-Type": "text/plain" },
-      body: JSON.stringify(res.rows),
+      body: JSON.stringify(users.rows),
     };
   } catch (err) {
     console.log(err);
