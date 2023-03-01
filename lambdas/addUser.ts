@@ -47,7 +47,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     statusCode: 200,
     headers: { "Content-Type": "application/json" },
     body: {
-      message: "Channel added successfully",
+      message: "User added successfully",
     },
   });
 };
