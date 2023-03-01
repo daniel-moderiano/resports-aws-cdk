@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { cleanEnv, str } from "envalid";
+import { Client } from "pg";
 
 const env = cleanEnv(process.env, {
   DATABASE_USER: str(),
@@ -14,3 +15,11 @@ export const databaseConfig = {
   DATABASE_NAME: env.DATABASE_NAME,
   DATABASE_HOST: env.DATABASE_HOST,
 };
+
+export const database = new Client({
+  user: databaseConfig.DATABASE_USER,
+  host: databaseConfig.DATABASE_HOST,
+  database: databaseConfig.DATABASE_NAME,
+  password: databaseConfig.DATABASE_PASSWORD,
+  port: 5432,
+});

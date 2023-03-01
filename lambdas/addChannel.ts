@@ -2,8 +2,7 @@ import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { is } from "superstruct";
 import { ChannelStruct } from "../types";
 import { insertChannel } from "../helpers/databaseQueries";
-import { Client } from "pg";
-import { databaseConfig } from "../config/database";
+import { database } from "../config/database";
 
 export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   if (!event.body) {
@@ -28,20 +27,12 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     });
   }
 
-  const client = new Client({
-    user: databaseConfig.DATABASE_USER,
-    host: databaseConfig.DATABASE_HOST,
-    database: databaseConfig.DATABASE_NAME,
-    password: databaseConfig.DATABASE_PASSWORD,
-    port: 5432,
-  });
-
   // The following code will throw a generic 500 internal server error. We might consider a try/catch, but I don't think we would handle the error any differently
-  await client.connect();
+  await database.connect();
 
-  await insertChannel(client, requestBody);
+  await insertChannel(database, requestBody);
 
-  await client.end();
+  await database.end();
 
   return JSON.stringify({
     statusCode: 200,
