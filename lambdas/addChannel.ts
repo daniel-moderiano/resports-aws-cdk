@@ -23,7 +23,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Missing required channel information.",
+        message: "Bad request. Invalid channel information.",
       },
     });
   }
