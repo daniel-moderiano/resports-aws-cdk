@@ -63,7 +63,7 @@ export class ChannelApiRoutes extends Construct {
     );
 
     httpApi.addRoutes({
-      path: "/channels/{channelId}",
+      path: "/channels",
       methods: [HttpMethod.POST],
       integration: addChannelIntegration,
       authorizer,

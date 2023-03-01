@@ -1,25 +1,26 @@
 import { Client, Pool } from "pg";
+import { Infer, boolean, literal, object, string, union } from "superstruct";
 
-export interface APIRequestBody {
-  user?: User;
-}
+// Superstruct types for runtime type checking
+export const ChannelStruct = object({
+  channel_id: string(),
+  platform: union([literal("youtube"), literal("twitch")]),
+});
 
-// Database column/table type definitions. Expect these typings when interacting with database queries.
-export interface Channel {
-  channel_id: string;
-  platform: "youtube" | "twitch";
-}
+export const UserStruct = object({
+  email: string(),
+  email_verified: boolean(),
+  user_id: string(),
+});
 
-export interface SavedChannel {
-  user_id: string;
-  channel_id: string;
-}
+export const SavedChannelStruct = object({
+  user_id: string(),
+  channel_id: string(),
+});
 
-export interface User {
-  email: string;
-  email_verified: boolean;
-  user_id: string;
-}
+export type Channel = Infer<typeof ChannelStruct>;
+export type User = Infer<typeof UserStruct>;
+export type SavedChannel = Infer<typeof SavedChannelStruct>;
 
 export type Database = Client | Pool;
 
