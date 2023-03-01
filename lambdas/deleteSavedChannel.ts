@@ -51,7 +51,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     statusCode: 200,
     headers: { "Content-Type": "application/json" },
     body: {
-      message: "Saved channel deleted successfully",
+      message: "Saved channel deleted (if it existed).",
     },
   });
 };

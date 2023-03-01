@@ -39,7 +39,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   // The following code will throw a generic 500 internal server error. We might consider a try/catch, but I don't think we would handle the error any differently
   await client.connect();
 
-  await selectSavedChannelByUserAndChannel(
+  const result = await selectSavedChannelByUserAndChannel(
     client,
     savedChannelInformation.user_id,
     savedChannelInformation.channel_id
@@ -47,11 +47,14 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
 
   await client.end();
 
+  const savedChannelData = result.rowCount === 0 ? null : result.rows[0];
+
   return JSON.stringify({
     statusCode: 200,
     headers: { "Content-Type": "application/json" },
     body: {
-      message: "Saved channel deleted successfully",
+      message: "Operation successful",
+      data: savedChannelData,
     },
   });
 };
