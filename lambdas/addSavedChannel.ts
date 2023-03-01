@@ -1,7 +1,7 @@
 import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { is } from "superstruct";
-import { ChannelStruct, SavedChannelStruct } from "../types";
-import { insertChannel, insertSavedChannel } from "../helpers/databaseQueries";
+import { SavedChannelStruct } from "../types";
+import { insertSavedChannel } from "../helpers/databaseQueries";
 import { Client } from "pg";
 import { databaseConfig } from "../config/database";
 
@@ -36,9 +36,9 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     port: 5432,
   });
 
-  // The following code will throw a generic 500 internal server error. We might consider a try/catch, but I don't think we would handle the error any differently
   await client.connect();
 
+  // Consider a custom try/catch here for the possibility of attempting to add a saved channel where the user and/or channel do not already exist in the database.
   await insertSavedChannel(
     client,
     savedChannelInformation.user_id,
@@ -51,7 +51,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     statusCode: 200,
     headers: { "Content-Type": "application/json" },
     body: {
-      message: "Channel added successfully",
+      message: "Saved channel added successfully",
     },
   });
 };
