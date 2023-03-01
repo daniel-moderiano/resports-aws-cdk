@@ -10,7 +10,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "cdk": "cdk",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "test:ci": "jest --ci --passWithNoTests"
   },
   "lint-staged": {
     "*.{js,ts}": [
