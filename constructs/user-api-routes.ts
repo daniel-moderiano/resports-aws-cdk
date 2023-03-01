@@ -67,21 +67,21 @@ export class UserApiRoutes extends Construct {
     );
 
     httpApi.addRoutes({
-      path: "/users/{userId}",
+      path: "/users",
       methods: [HttpMethod.POST],
       integration: upsertUserIntegration,
       authorizer,
     });
 
     httpApi.addRoutes({
-      path: "/users/{userId}",
+      path: "/users/{user_id}",
       methods: [HttpMethod.DELETE],
       integration: deleteUserIntegration,
       authorizer,
     });
 
     httpApi.addRoutes({
-      path: "/users/{userId}/saved-channels",
+      path: "/users/{user_id}/saved-channels",
       methods: [HttpMethod.GET],
       integration: getUserSavedChannelsIntegration,
       authorizer,

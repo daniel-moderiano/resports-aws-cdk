@@ -1,5 +1,6 @@
 name: CI
 
+# Dummy env variables. These are required to avoid errors in files trying to access env variables
 env:
   DATABASE_PASSWORD: pass
   DATABASE_USER: user
