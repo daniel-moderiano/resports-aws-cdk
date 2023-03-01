@@ -47,6 +47,7 @@ export class ResportsAwsCdkStack extends cdk.Stack {
         DATABASE_NAME: env.DATABASE_NAME,
         DATABASE_PASSWORD: env.DATABASE_PASSWORD,
         DATABASE_USER: env.DATABASE_USER,
+        AWS_ACCOUNT: env.AWS_ACCOUNT,
       },
       timeout: Duration.seconds(30),
       runtime: lambda.Runtime.NODEJS_16_X,
