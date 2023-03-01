@@ -43,26 +43,18 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   // The following code will throw a generic 500 internal server error. We might consider a try/catch, but I don't think we would handle the error any differently
   await client.connect();
 
+  await removeAllUserSavedChannels(client, userInformation.user_id);
   const result = await deleteUser(client, userInformation.user_id);
 
-  if (result.rowCount === 0) {
-    await client.end();
-    return JSON.stringify({
-      statusCode: 200,
-      headers: { "Content-Type": "application/json" },
-      body: {
-        message: "No existing user to delete",
-      },
-    });
-  } else {
-    await removeAllUserSavedChannels(client, userInformation.user_id);
-    await client.end();
-    return JSON.stringify({
-      statusCode: 200,
-      headers: { "Content-Type": "application/json" },
-      body: {
-        message: "All user data removed",
-      },
-    });
-  }
+  await client.end();
+  return JSON.stringify({
+    statusCode: 200,
+    headers: { "Content-Type": "application/json" },
+    body: {
+      message:
+        result.rowCount === 0
+          ? "No existing user to delete"
+          : "All user data deleted",
+    },
+  });
 };
