@@ -56,11 +56,13 @@ export class ResportsAwsCdkStack extends cdk.Stack {
     new UserApiRoutes(this, "UserApiRoutes", {
       httpApi,
       authorizer,
+      vpc: vpc.vpc,
     });
 
     new SavedChannelApiRoutes(this, "SavedChannelApiRoutes", {
       httpApi,
       authorizer,
+      vpc: vpc.vpc,
     });
 
     new cdk.CfnOutput(this, "apiUrl", {

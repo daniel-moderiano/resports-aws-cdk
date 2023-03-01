@@ -33,7 +33,7 @@ export class ChannelApiRoutes extends Construct {
     };
 
     const addChannel = new NodejsFunction(this, "AddChannelHandler", {
-      entry: join(__dirname, "/../lambdas", "upsertChannel.ts"),
+      entry: join(__dirname, "/../lambdas", "addChannel.ts"),
       ...nodeJsFunctionProps,
     });
 
