@@ -1,6 +1,7 @@
 import { Handler } from "aws-lambda";
 import { Client } from "pg";
 import { databaseConfig } from "../config/database";
+import { selectAllFromTable } from "../helpers/databaseQueries";
 
 export const handler: Handler = async function () {
   try {
@@ -13,42 +14,13 @@ export const handler: Handler = async function () {
     });
     await client.connect();
 
-    const users = await client.query(
-      `SELECT 
-      table_name, 
-      column_name, 
-      data_type 
-   FROM 
-      information_schema.columns
-   WHERE 
-      table_name = 'users'`
-    );
+    const users = await selectAllFromTable(client, "users");
+    const channels = await selectAllFromTable(client, "channels");
+    const savedChannels = await selectAllFromTable(client, "saved_channels");
 
     console.log(users.rows);
 
-    const channels = await client.query(
-      `SELECT 
-      table_name, 
-      column_name, 
-      data_type 
-   FROM 
-      information_schema.columns
-   WHERE 
-      table_name = 'channels'`
-    );
-
     console.log(channels.rows);
-
-    const savedChannels = await client.query(
-      `SELECT 
-      table_name, 
-      column_name, 
-      data_type 
-   FROM 
-      information_schema.columns
-   WHERE 
-      table_name = 'saved_channels'`
-    );
 
     console.log(savedChannels.rows);
 
