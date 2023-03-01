@@ -15,18 +15,22 @@ import { Duration } from "aws-cdk-lib";
 interface ChannelRoutesProps {
   httpApi: HttpApi;
   authorizer: HttpJwtAuthorizer;
-  vpc?: Vpc;
+  vpc: Vpc;
 }
-
-export const nodeJsFunctionProps: NodejsFunctionProps = {
-  runtime: lambda.Runtime.NODEJS_16_X, // execution environment
-};
 
 export class ChannelApiRoutes extends Construct {
   constructor(scope: Construct, id: string, props: ChannelRoutesProps) {
     super(scope, id);
 
     const { httpApi, authorizer, vpc } = props;
+
+    const nodeJsFunctionProps: NodejsFunctionProps = {
+      runtime: lambda.Runtime.NODEJS_16_X,
+      vpc: vpc,
+      vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
+      environment: databaseConfig,
+      timeout: Duration.seconds(30),
+    };
 
     const addChannel = new NodejsFunction(this, "AddChannelHandler", {
       entry: join(__dirname, "/../lambdas", "upsertChannel.ts"),
@@ -40,11 +44,6 @@ export class ChannelApiRoutes extends Construct {
 
     const privateLambda = new NodejsFunction(this, "PrivateLambda", {
       entry: join(__dirname, "/../lambdas", "private.ts"),
-      vpc: vpc,
-      vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
-      environment: databaseConfig,
-      timeout: Duration.seconds(30),
-
       ...nodeJsFunctionProps,
     });
 
