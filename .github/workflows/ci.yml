@@ -1,5 +1,11 @@
 name: CI
 
+env:
+  DATABASE_PASSWORD: pass
+  DATABASE_USER: user
+  DATABASE_NAME: name
+  DATABASE_HOST: host
+
 on:
   # runs on pushes to the main branch
   push:
