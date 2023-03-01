@@ -28,7 +28,7 @@ export class ChannelApiRoutes extends Construct {
 
     const { httpApi, authorizer, vpc } = props;
 
-    const upsertChannel = new NodejsFunction(this, "UpsertChannelHandler", {
+    const addChannel = new NodejsFunction(this, "AddChannelHandler", {
       entry: join(__dirname, "/../lambdas", "upsertChannel.ts"),
       ...nodeJsFunctionProps,
     });
@@ -53,9 +53,9 @@ export class ChannelApiRoutes extends Construct {
       privateLambda
     );
 
-    const upsertChannelIntegration = new HttpLambdaIntegration(
-      "UpsertChannelIntegration",
-      upsertChannel
+    const addChannelIntegration = new HttpLambdaIntegration(
+      "AddChannelIntegration",
+      addChannel
     );
 
     const deleteChannelIntegration = new HttpLambdaIntegration(
@@ -66,7 +66,7 @@ export class ChannelApiRoutes extends Construct {
     httpApi.addRoutes({
       path: "/channels/{channelId}",
       methods: [HttpMethod.POST],
-      integration: upsertChannelIntegration,
+      integration: addChannelIntegration,
       authorizer,
     });
 
