@@ -9,24 +9,24 @@ const ChannelIdStruct = object({
 });
 
 export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
-  if (!event.body) {
+  const channelInformation = event.pathParameters;
+
+  if (!channelInformation) {
     return JSON.stringify({
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Missing request body.",
+        message: "Bad request. Missing channel ID.",
       },
     });
   }
 
-  const channelInfo = JSON.parse(event.body);
-
-  if (!is(channelInfo, ChannelIdStruct)) {
+  if (!is(channelInformation, ChannelIdStruct)) {
     return JSON.stringify({
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Invalid channel information.",
+        message: "Bad request. Invalid channel ID.",
       },
     });
   }
@@ -42,7 +42,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   // The following code will throw a generic 500 internal server error. We might consider a try/catch, but I don't think we would handle the error any differently
   await client.connect();
 
-  const result = await deleteChannel(client, channelInfo.channel_id);
+  const result = await deleteChannel(client, channelInformation.channel_id);
 
   await client.end();
 
@@ -53,7 +53,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
       message:
         result.rowCount === 0
           ? "No existing channel to delete"
-          : `Channel ${channelInfo.channel_id} deleted.`,
+          : `Channel ${channelInformation.channel_id} deleted.`,
     },
   });
 };

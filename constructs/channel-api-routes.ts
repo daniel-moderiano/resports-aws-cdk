@@ -70,7 +70,7 @@ export class ChannelApiRoutes extends Construct {
     });
 
     httpApi.addRoutes({
-      path: "/channels/{channelId}",
+      path: "/channels/{channel_id}",
       methods: [HttpMethod.DELETE],
       integration: deleteChannelIntegration,
       authorizer,
