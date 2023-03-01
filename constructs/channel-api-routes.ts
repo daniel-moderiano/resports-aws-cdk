@@ -9,7 +9,7 @@ import { Construct } from "constructs";
 import { join } from "path";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import { SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
-import { env } from "../config/database";
+import { databaseConfig } from "../config/database";
 import { Duration } from "aws-cdk-lib";
 
 interface ChannelRoutesProps {
@@ -42,13 +42,7 @@ export class ChannelApiRoutes extends Construct {
       entry: join(__dirname, "/../lambdas", "private.ts"),
       vpc: vpc,
       vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
-      environment: {
-        DATABASE_HOST: env.DATABASE_HOST,
-        DATABASE_NAME: env.DATABASE_NAME,
-        DATABASE_PASSWORD: env.DATABASE_PASSWORD,
-        DATABASE_USER: env.DATABASE_USER,
-        AWS_ACCOUNT: env.AWS_ACCOUNT,
-      },
+      environment: databaseConfig,
       timeout: Duration.seconds(30),
 
       ...nodeJsFunctionProps,

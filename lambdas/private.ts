@@ -1,14 +1,14 @@
 import { Handler } from "aws-lambda";
 import { Client } from "pg";
-import { env } from "../config/database";
+import { databaseConfig } from "../config/database";
 
 export const handler: Handler = async function () {
   try {
     const client = new Client({
-      user: env.DATABASE_USER,
-      host: env.DATABASE_HOST,
-      database: env.DATABASE_NAME,
-      password: env.DATABASE_PASSWORD,
+      user: databaseConfig.DATABASE_USER,
+      host: databaseConfig.DATABASE_HOST,
+      database: databaseConfig.DATABASE_NAME,
+      password: databaseConfig.DATABASE_PASSWORD,
       port: 5432,
     });
     await client.connect();
