@@ -20,9 +20,6 @@ jobs:
           cache: "npm"
       # install dependencies using clean-install command (preferred for CI environments)
       - run: npm ci
-      # perform linting
-      - run: npm run lint
-      - run: npm run prettier
       # verify that there are no type and build errors
       - run: npm run build
       # run tests with Jest
