@@ -11,7 +11,9 @@
     "test:watch": "jest --watch",
     "cdk": "cdk",
     "prepare": "husky install",
-    "test:ci": "jest --ci --passWithNoTests"
+    "test:ci": "jest --ci --passWithNoTests",
+    "prettier": "prettier --check .",
+    "lint": "eslint --fix"
   },
   "lint-staged": {
     "*.{js,ts}": [
