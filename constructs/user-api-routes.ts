@@ -32,8 +32,8 @@ export class UserApiRoutes extends Construct {
       timeout: Duration.seconds(30),
     };
 
-    const upsertUser = new NodejsFunction(this, "UpsertUserHandler", {
-      entry: join(__dirname, "/../lambdas", "upsertUser.ts"),
+    const addUser = new NodejsFunction(this, "AddUserHandler", {
+      entry: join(__dirname, "/../lambdas", "addUser.ts"),
       ...nodeJsFunctionProps,
     });
 
@@ -51,9 +51,9 @@ export class UserApiRoutes extends Construct {
       }
     );
 
-    const upsertUserIntegration = new HttpLambdaIntegration(
-      "UpsertUserIntegration",
-      upsertUser
+    const addUserIntegration = new HttpLambdaIntegration(
+      "AddUserIntegration",
+      addUser
     );
 
     const deleteUserIntegration = new HttpLambdaIntegration(
@@ -69,7 +69,7 @@ export class UserApiRoutes extends Construct {
     httpApi.addRoutes({
       path: "/users",
       methods: [HttpMethod.POST],
-      integration: upsertUserIntegration,
+      integration: addUserIntegration,
       authorizer,
     });
 
