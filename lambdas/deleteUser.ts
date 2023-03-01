@@ -3,6 +3,7 @@ import { is, object, string } from "superstruct";
 import { deleteUser } from "../helpers/databaseQueries";
 import { Client } from "pg";
 import { databaseConfig } from "../config/database";
+import { removeAllUserSavedChannels } from "../helpers/databaseQueries";
 
 const UserIdStruct = object({
   user_id: string(),
@@ -44,16 +45,24 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
 
   const result = await deleteUser(client, userInformation.user_id);
 
-  await client.end();
-
-  return JSON.stringify({
-    statusCode: 200,
-    headers: { "Content-Type": "application/json" },
-    body: {
-      message:
-        result.rowCount === 0
-          ? "No existing user to delete"
-          : `User ${userInformation.user_id} deleted.`,
-    },
-  });
+  if (result.rowCount === 0) {
+    await client.end();
+    return JSON.stringify({
+      statusCode: 200,
+      headers: { "Content-Type": "application/json" },
+      body: {
+        message: "No existing user to delete",
+      },
+    });
+  } else {
+    await removeAllUserSavedChannels(client, userInformation.user_id);
+    await client.end();
+    return JSON.stringify({
+      statusCode: 200,
+      headers: { "Content-Type": "application/json" },
+      body: {
+        message: "All user data removed",
+      },
+    });
+  }
 };

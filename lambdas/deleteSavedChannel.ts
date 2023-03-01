@@ -39,7 +39,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   // The following code will throw a generic 500 internal server error. We might consider a try/catch, but I don't think we would handle the error any differently
   await client.connect();
 
-  await safelyRemoveSavedChannel(
+  const result = await safelyRemoveSavedChannel(
     client,
     savedChannelInformation.user_id,
     savedChannelInformation.channel_id
@@ -51,7 +51,10 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     statusCode: 200,
     headers: { "Content-Type": "application/json" },
     body: {
-      message: "Saved channel deleted (if it existed).",
+      message:
+        result.rowCount === 0
+          ? "No existing channel to delete"
+          : "Saved channel deleted",
     },
   });
 };
