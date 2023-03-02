@@ -1,8 +1,7 @@
 import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { is, object, string } from "superstruct";
 import { deleteUser } from "../helpers/databaseQueries";
-import { Client } from "pg";
-import { databaseConfig } from "../config/database";
+import { database } from "../config/database";
 import { removeAllUserSavedChannels } from "../helpers/databaseQueries";
 
 const UserIdStruct = object({
@@ -32,21 +31,13 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     });
   }
 
-  const client = new Client({
-    user: databaseConfig.DATABASE_USER,
-    host: databaseConfig.DATABASE_HOST,
-    database: databaseConfig.DATABASE_NAME,
-    password: databaseConfig.DATABASE_PASSWORD,
-    port: 5432,
-  });
+  await database.connect();
 
-  // The following code will throw a generic 500 internal server error. We might consider a try/catch, but I don't think we would handle the error any differently
-  await client.connect();
+  await removeAllUserSavedChannels(database, userInformation.user_id);
+  const result = await deleteUser(database, userInformation.user_id);
 
-  await removeAllUserSavedChannels(client, userInformation.user_id);
-  const result = await deleteUser(client, userInformation.user_id);
+  await database.end();
 
-  await client.end();
   return JSON.stringify({
     statusCode: 200,
     headers: { "Content-Type": "application/json" },

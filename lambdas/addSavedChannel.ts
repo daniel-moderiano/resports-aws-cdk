@@ -2,8 +2,7 @@ import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { is } from "superstruct";
 import { SavedChannelStruct } from "../types";
 import { insertSavedChannel } from "../helpers/databaseQueries";
-import { Client } from "pg";
-import { databaseConfig } from "../config/database";
+import { database } from "../config/database";
 
 export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   if (!event.body) {
@@ -28,24 +27,15 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     });
   }
 
-  const client = new Client({
-    user: databaseConfig.DATABASE_USER,
-    host: databaseConfig.DATABASE_HOST,
-    database: databaseConfig.DATABASE_NAME,
-    password: databaseConfig.DATABASE_PASSWORD,
-    port: 5432,
-  });
+  await database.connect();
 
-  await client.connect();
-
-  // Consider a custom try/catch here for the possibility of attempting to add a saved channel where the user and/or channel do not already exist in the database.
   await insertSavedChannel(
-    client,
+    database,
     savedChannelInformation.user_id,
     savedChannelInformation.user_id
   );
 
-  await client.end();
+  await database.end();
 
   return JSON.stringify({
     statusCode: 200,

@@ -15,9 +15,9 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     });
   }
 
-  const requestBody = JSON.parse(event.body);
+  const channelInformation = JSON.parse(event.body);
 
-  if (!is(requestBody, ChannelStruct)) {
+  if (!is(channelInformation, ChannelStruct)) {
     return JSON.stringify({
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
@@ -27,10 +27,9 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     });
   }
 
-  // The following code will throw a generic 500 internal server error. We might consider a try/catch, but I don't think we would handle the error any differently
   await database.connect();
 
-  await insertChannel(database, requestBody);
+  await insertChannel(database, channelInformation);
 
   await database.end();
 
