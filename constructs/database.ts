@@ -26,13 +26,11 @@ export class PostgresDatabase extends Construct {
   constructor(scope: Construct, id: string, props: DatabaseProps) {
     super(scope, id);
 
-    const { vpc } = props;
-
     this.database = new DatabaseInstance(this, "ResportsDatabase", {
       engine: DatabaseInstanceEngine.postgres({
         version: PostgresEngineVersion.VER_13_7,
       }),
-      vpc,
+      vpc: props.vpc,
       vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
       instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.MICRO),
       port: 5432,
