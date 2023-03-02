@@ -1,5 +1,4 @@
-import { HttpApi, HttpMethod } from "@aws-cdk/aws-apigatewayv2-alpha";
-import { HttpJwtAuthorizer } from "@aws-cdk/aws-apigatewayv2-authorizers-alpha";
+import { HttpMethod } from "@aws-cdk/aws-apigatewayv2-alpha";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import {
   NodejsFunction,
@@ -8,18 +7,13 @@ import {
 import { Construct } from "constructs";
 import { join } from "path";
 import * as lambda from "aws-cdk-lib/aws-lambda";
-import { SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
+import { SubnetType } from "aws-cdk-lib/aws-ec2";
 import { databaseConfig } from "../config/database";
 import { Duration } from "aws-cdk-lib";
-
-interface UserRoutesProps {
-  httpApi: HttpApi;
-  authorizer: HttpJwtAuthorizer;
-  vpc: Vpc;
-}
+import { ApiRoutesProps } from "./http-api";
 
 export class UserApiRoutes extends Construct {
-  constructor(scope: Construct, id: string, props: UserRoutesProps) {
+  constructor(scope: Construct, id: string, props: ApiRoutesProps) {
     super(scope, id);
 
     const { httpApi, authorizer, vpc } = props;
