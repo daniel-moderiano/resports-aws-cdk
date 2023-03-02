@@ -1,8 +1,8 @@
 import { Handler, APIGatewayProxyEventV2 } from "aws-lambda";
 import { is } from "superstruct";
-import { database } from "../config/database";
-import { upsertUser } from "../helpers/databaseQueries";
-import { UserStruct } from "../types";
+import { database } from "@/config";
+import { upsertUser } from "@/helpers";
+import { UserStruct } from "@/types";
 
 export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   if (!event.body) {

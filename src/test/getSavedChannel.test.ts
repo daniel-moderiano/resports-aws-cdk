@@ -1,5 +1,5 @@
 import { APIGatewayProxyEventV2 } from "aws-lambda";
-import { handler } from "../lambdas/getSavedChannel";
+import { handler } from "@/lambdas/getSavedChannel";
 import { mockCallback, mockContext, mockEvent } from "./constants";
 
 const eventNoParams: APIGatewayProxyEventV2 = {

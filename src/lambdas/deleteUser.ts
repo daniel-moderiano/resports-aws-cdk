@@ -1,8 +1,7 @@
 import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { is, object, string } from "superstruct";
-import { deleteUser } from "../helpers/databaseQueries";
-import { database } from "../config/database";
-import { removeAllUserSavedChannels } from "../helpers/databaseQueries";
+import { database } from "@/config";
+import { removeAllUserSavedChannels, deleteUser } from "@/helpers";
 
 const UserIdStruct = object({
   user_id: string(),

@@ -1,7 +1,7 @@
 import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { is, object, string } from "superstruct";
-import { deleteChannel } from "../helpers/databaseQueries";
-import { database } from "../config/database";
+import { deleteChannel } from "@/helpers";
+import { database } from "@/config";
 
 const ChannelIdStruct = object({
   channel_id: string(),

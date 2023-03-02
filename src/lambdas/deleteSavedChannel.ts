@@ -1,8 +1,8 @@
 import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { is } from "superstruct";
-import { SavedChannelStruct } from "../types";
-import { safelyRemoveSavedChannel } from "../helpers/databaseQueries";
-import { database } from "../config/database";
+import { SavedChannelStruct } from "@/types";
+import { safelyRemoveSavedChannel } from "@/helpers";
+import { database } from "@/config";
 
 export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   const savedChannelInformation = event.queryStringParameters;

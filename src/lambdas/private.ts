@@ -1,7 +1,7 @@
 import { Handler } from "aws-lambda";
 import { Client } from "pg";
-import { databaseConfig } from "../config/database";
-import { selectAllFromTable } from "../helpers/databaseQueries";
+import { databaseConfig } from "@/config";
+import { selectAllFromTable } from "@/helpers";
 
 export const handler: Handler = async function () {
   try {

@@ -13,7 +13,7 @@
     "prepare": "husky install",
     "test:ci": "jest --ci --passWithNoTests",
     "prettier": "prettier --check .",
-    "lint": "eslint --fix"
+    "lint": "npx eslint src/* lib/*"
   },
   "lint-staged": {
     "*.{js,ts}": [

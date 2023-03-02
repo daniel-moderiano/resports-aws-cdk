@@ -1,14 +1,12 @@
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
-import { VPC } from "../constructs/vpc";
-import { PostgresDatabase } from "../constructs/database";
-import { databaseConfig } from "../config/database";
+import { VPC, PostgresDatabase, APIGateway } from "@/constructs";
+import { databaseConfig } from "@/config";
 import { SubnetType } from "aws-cdk-lib/aws-ec2";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { join } from "path";
 import { Duration } from "aws-cdk-lib";
-import * as lambda from "aws-cdk-lib/aws-lambda";
-import { APIGateway } from "../constructs/http-api";
+import { Runtime } from "aws-cdk-lib/aws-lambda";
 
 export class ResportsAwsCdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -28,7 +26,7 @@ export class ResportsAwsCdkStack extends cdk.Stack {
       vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
       environment: databaseConfig,
       timeout: Duration.seconds(30),
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: Runtime.NODEJS_16_X,
     });
 
     const httpApi = new APIGateway(this, "HttpApiGateway", {

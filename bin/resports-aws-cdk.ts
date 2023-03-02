@@ -2,7 +2,7 @@
 import "source-map-support/register";
 import * as cdk from "aws-cdk-lib";
 import { ResportsAwsCdkStack } from "../lib/resports-aws-cdk-stack";
-import { env } from "../config/env";
+import { env } from "@/config";
 
 const app = new cdk.App();
 new ResportsAwsCdkStack(app, "ResportsAwsCdkStack", {

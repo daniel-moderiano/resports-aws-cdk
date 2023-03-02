@@ -1,5 +1,5 @@
 import { APIGatewayProxyEventV2 } from "aws-lambda";
-import { handler } from "../lambdas/deleteUser";
+import { handler } from "@/lambdas/getUserSavedChannels";
 import { mockCallback, mockContext, mockEvent } from "./constants";
 
 const eventNoParams: APIGatewayProxyEventV2 = {
@@ -7,34 +7,38 @@ const eventNoParams: APIGatewayProxyEventV2 = {
   pathParameters: undefined,
 };
 
-const eventBadUserId: APIGatewayProxyEventV2 = {
+const eventBadSavedChannel: APIGatewayProxyEventV2 = {
   ...mockEvent,
   pathParameters: {
     channel_id: "1234",
   },
 };
 
-it("returns bad request for missing path params", async () => {
+it("returns bad request for missing parameters", async () => {
   const response = await handler(eventNoParams, mockContext, mockCallback);
   expect(response).toBe(
     JSON.stringify({
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Missing user ID.",
+        message: "Bad request. Missing user information.",
       },
     })
   );
 });
 
 it("returns bad request for incorrect format of user information", async () => {
-  const response = await handler(eventBadUserId, mockContext, mockCallback);
+  const response = await handler(
+    eventBadSavedChannel,
+    mockContext,
+    mockCallback
+  );
   expect(response).toBe(
     JSON.stringify({
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Invalid user ID.",
+        message: "Bad request. Invalid user information.",
       },
     })
   );

@@ -1,6 +1,6 @@
 import { Handler } from "aws-lambda";
-import { database } from "../config/database";
-import { createNewTables, dropExistingTables } from "../helpers/initdb";
+import { database } from "@/config";
+import { createNewTables, dropExistingTables } from "@/helpers";
 
 export const handler: Handler = async function () {
   await database.connect();

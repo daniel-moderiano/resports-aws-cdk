@@ -1,8 +1,8 @@
 import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { is } from "superstruct";
-import { SavedChannelStruct } from "../types";
-import { insertSavedChannel } from "../helpers/databaseQueries";
-import { database } from "../config/database";
+import { ChannelStruct } from "@/types";
+import { insertChannel } from "@/helpers";
+import { database } from "@/config";
 
 export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   if (!event.body) {
@@ -10,30 +10,26 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Missing channel and/or user information.",
+        message: "Bad request. Missing request body.",
       },
     });
   }
 
-  const savedChannelInformation = JSON.parse(event.body);
+  const channelInformation = JSON.parse(event.body);
 
-  if (!is(savedChannelInformation, SavedChannelStruct)) {
+  if (!is(channelInformation, ChannelStruct)) {
     return JSON.stringify({
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Invalid channel and/or user information.",
+        message: "Bad request. Invalid channel information.",
       },
     });
   }
 
   await database.connect();
 
-  await insertSavedChannel(
-    database,
-    savedChannelInformation.user_id,
-    savedChannelInformation.user_id
-  );
+  await insertChannel(database, channelInformation);
 
   await database.end();
 
@@ -41,7 +37,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     statusCode: 200,
     headers: { "Content-Type": "application/json" },
     body: {
-      message: "Saved channel added successfully",
+      message: "Channel added successfully",
     },
   });
 };

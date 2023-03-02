@@ -12,9 +12,10 @@ import {
   selectSavedChannelsByChannelId,
   selectSavedChannelsByUserId,
   upsertUser,
-} from "../helpers/databaseQueries";
-import { createNewTables, dropExistingTables } from "../helpers/initdb";
-import { Channel, SavedChannel, User } from "../types";
+  createNewTables,
+  dropExistingTables,
+} from "@/helpers";
+import { Channel, SavedChannel, User } from "@/types";
 
 // Uses an in-memory Postgres database for testing
 const testPool = new Pool({

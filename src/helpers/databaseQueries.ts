@@ -1,4 +1,4 @@
-import { Channel, Database, Table, User } from "../types";
+import { Channel, Database, Table, User } from "@/types";
 
 // GENERAL QUERIES
 

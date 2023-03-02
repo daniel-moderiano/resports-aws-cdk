@@ -1,7 +1,7 @@
 import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { is, object, string } from "superstruct";
-import { selectSavedChannelsByUserId } from "../helpers/databaseQueries";
-import { database } from "../config/database";
+import { selectSavedChannelsByUserId } from "@/helpers";
+import { database } from "@/config";
 
 const UserIdStruct = object({
   user_id: string(),

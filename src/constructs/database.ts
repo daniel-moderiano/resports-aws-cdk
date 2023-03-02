@@ -13,7 +13,7 @@ import {
   Vpc,
 } from "aws-cdk-lib/aws-ec2";
 import { Duration, SecretValue } from "aws-cdk-lib";
-import { databaseConfig } from "../config/database";
+import { databaseConfig } from "@/config";
 
 interface DatabaseProps {
   vpc: Vpc;
