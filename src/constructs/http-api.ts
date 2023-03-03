@@ -5,7 +5,7 @@ import { ChannelApiRoutes } from "./channel-api-routes";
 import { UserApiRoutes } from "./user-api-routes";
 import { SavedChannelApiRoutes } from "./saved-channels-api-routes";
 import { Vpc } from "aws-cdk-lib/aws-ec2";
-import { DatabaseOverviewLambda } from "./database-overview-lambda";
+import { DatabaseOverviewLambda } from "@/constructs";
 import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 
 interface APIGatewayProps {
