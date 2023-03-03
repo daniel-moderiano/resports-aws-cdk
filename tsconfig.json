@@ -23,7 +23,6 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "isolatedModules": true,
     "typeRoots": ["./node_modules/@types"],
     "baseUrl": ".",
     "paths": {

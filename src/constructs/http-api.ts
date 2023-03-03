@@ -1,10 +1,12 @@
-import { HttpApi } from "@aws-cdk/aws-apigatewayv2-alpha";
+import { HttpApi, HttpMethod } from "@aws-cdk/aws-apigatewayv2-alpha";
 import { HttpJwtAuthorizer } from "@aws-cdk/aws-apigatewayv2-authorizers-alpha";
 import { Construct } from "constructs";
 import { ChannelApiRoutes } from "./channel-api-routes";
 import { UserApiRoutes } from "./user-api-routes";
 import { SavedChannelApiRoutes } from "./saved-channels-api-routes";
 import { Vpc } from "aws-cdk-lib/aws-ec2";
+import { DatabaseOverviewLambda } from "./database-overview-lambda";
+import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 
 interface APIGatewayProps {
   vpc: Vpc;
@@ -35,6 +37,23 @@ export class APIGateway extends Construct {
         identitySource: ["$request.header.Authorization"],
       }
     );
+
+    const databaseOverviewLambda = new DatabaseOverviewLambda(
+      this,
+      "DatabaseOverviewLambda",
+      {
+        vpc: props.vpc,
+      }
+    );
+
+    httpApi.addRoutes({
+      path: "/overview",
+      methods: [HttpMethod.GET],
+      integration: new HttpLambdaIntegration(
+        "DatabaseOverviewLambdaIntegration",
+        databaseOverviewLambda.lambda
+      ),
+    });
 
     new ChannelApiRoutes(this, "ChannelApiRoutes", {
       httpApi,

@@ -36,16 +36,6 @@ export class ChannelApiRoutes extends Construct {
       ...nodeJsFunctionProps,
     });
 
-    const privateLambda = new NodejsFunction(this, "PrivateLambda", {
-      entry: join(__dirname, "/../lambdas", "private.ts"),
-      ...nodeJsFunctionProps,
-    });
-
-    const privateIntegration = new HttpLambdaIntegration(
-      "PrivateIntegration",
-      privateLambda
-    );
-
     const addChannelIntegration = new HttpLambdaIntegration(
       "AddChannelIntegration",
       addChannel
@@ -68,13 +58,6 @@ export class ChannelApiRoutes extends Construct {
       methods: [HttpMethod.DELETE],
       integration: deleteChannelIntegration,
       authorizer,
-    });
-
-    httpApi.addRoutes({
-      path: "/private",
-      methods: [HttpMethod.GET],
-      integration: privateIntegration,
-      // authorizer,
     });
   }
 }
