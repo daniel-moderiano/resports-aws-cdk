@@ -20,7 +20,7 @@ export class DatabaseInitialiseLambda extends Construct {
 
     // Database initialiser lambda. Should be called manually via CLI or console as this WILL erase the database
     new NodejsFunction(this, "DatabaseInitialiser", {
-      entry: join(__dirname, "../src/lambdas", "initialiseDatabase.ts"),
+      entry: join(__dirname, "/../lambdas", "initialiseDatabase.ts"),
       vpc: props.vpc,
       vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
       environment: databaseConfig,

@@ -21,7 +21,7 @@ export class DatabaseOverviewLambda extends Construct {
     super(scope, id);
 
     this.lambda = new NodejsFunction(this, "DatabaseOverviewLambda", {
-      entry: join(__dirname, "/../lambdas", "private.ts"),
+      entry: join(__dirname, "/../lambdas", "databaseOverview.ts"),
       runtime: Runtime.NODEJS_16_X,
       vpc: props.vpc,
       vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
