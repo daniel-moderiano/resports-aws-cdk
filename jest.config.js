@@ -5,6 +5,9 @@ module.exports = {
   transform: {
     "^.+\\.tsx?$": "ts-jest",
   },
+  moduleNameMapper: {
+    "@/(.*)": ["<rootDir>/src/$1"],
+  },
   globalSetup: "<rootDir>/node_modules/@databases/pg-test/jest/globalSetup",
   globalTeardown:
     "<rootDir>/node_modules/@databases/pg-test/jest/globalTeardown",
