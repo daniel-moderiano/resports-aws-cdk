@@ -21,7 +21,7 @@ export class ResportsAwsCdkStack extends cdk.Stack {
 
     // Database initialiser lambda. Should be called manually via CLI or console as this WILL erase the database
     new NodejsFunction(this, "DatabaseInitialiser", {
-      entry: join(__dirname, "/../lambdas", "initialiseDatabase.ts"),
+      entry: join(__dirname, "../src/lambdas", "initialiseDatabase.ts"),
       vpc: vpc.vpc,
       vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
       environment: databaseConfig,
