@@ -1,8 +1,10 @@
 import { Handler } from "aws-lambda";
-import { database } from "@/config";
+import { databaseClientConfig } from "@/config";
 import { selectAllFromTable } from "@/helpers";
+import { Client } from "pg";
 
 export const handler: Handler = async function () {
+  const database = new Client({ ...databaseClientConfig });
   await database.connect();
 
   const users = await selectAllFromTable(database, "users");

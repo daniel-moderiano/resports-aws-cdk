@@ -1,7 +1,8 @@
 import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { is, object, string } from "superstruct";
-import { database } from "@/config";
+import { databaseClientConfig } from "@/config";
 import { removeAllUserSavedChannels, deleteUser } from "@/helpers";
+import { Client } from "pg";
 
 const UserIdStruct = object({
   user_id: string(),
@@ -30,6 +31,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     });
   }
 
+  const database = new Client({ ...databaseClientConfig });
   await database.connect();
 
   await removeAllUserSavedChannels(database, userInformation.user_id);

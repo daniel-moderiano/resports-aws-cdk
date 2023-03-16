@@ -1,8 +1,9 @@
 import { Handler, APIGatewayProxyEventV2 } from "aws-lambda";
 import { is } from "superstruct";
-import { database } from "@/config";
 import { upsertUser } from "@/helpers";
 import { UserStruct } from "@/types";
+import { Client } from "pg";
+import { databaseClientConfig } from "@/config";
 
 export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   if (!event.body) {
@@ -27,6 +28,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     });
   }
 
+  const database = new Client({ ...databaseClientConfig });
   await database.connect();
 
   await upsertUser(database, userInformation);
