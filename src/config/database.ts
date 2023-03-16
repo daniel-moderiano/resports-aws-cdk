@@ -16,10 +16,10 @@ export const databaseConfig = {
   DATABASE_HOST: env.DATABASE_HOST,
 };
 
-export const database = new Client({
+export const databaseClientConfig = {
   user: databaseConfig.DATABASE_USER,
   host: databaseConfig.DATABASE_HOST,
   database: databaseConfig.DATABASE_NAME,
   password: databaseConfig.DATABASE_PASSWORD,
   port: 5432,
-});
+};

@@ -2,7 +2,8 @@ import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { is } from "superstruct";
 import { ChannelStruct } from "@/types";
 import { insertChannel } from "@/helpers";
-import { database } from "@/config";
+import { databaseClientConfig } from "@/config";
+import { Client } from "pg";
 
 export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   if (!event.body) {
@@ -27,6 +28,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     });
   }
 
+  const database = new Client({ ...databaseClientConfig });
   await database.connect();
 
   await insertChannel(database, channelInformation);
