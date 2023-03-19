@@ -1,4 +1,8 @@
-import { HttpApi, HttpMethod } from "@aws-cdk/aws-apigatewayv2-alpha";
+import {
+  CorsHttpMethod,
+  HttpApi,
+  HttpMethod,
+} from "@aws-cdk/aws-apigatewayv2-alpha";
 import { HttpJwtAuthorizer } from "@aws-cdk/aws-apigatewayv2-authorizers-alpha";
 import { Construct } from "constructs";
 import { ChannelApiRoutes } from "./channel-api-routes";
@@ -27,6 +31,13 @@ export class APIGateway extends Construct {
     // defines an API Gateway HTTP API resource
     const httpApi = new HttpApi(this, "HttpApi", {
       corsPreflight: {
+        allowHeaders: ["Authorization", "Content-Type"],
+        allowMethods: [
+          CorsHttpMethod.GET,
+          CorsHttpMethod.POST,
+          CorsHttpMethod.DELETE,
+          CorsHttpMethod.PUT,
+        ],
         allowOrigins: ["*"],
       },
     });
