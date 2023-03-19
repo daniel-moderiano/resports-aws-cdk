@@ -1,5 +1,13 @@
 import { Client, Pool } from "pg";
-import { Infer, boolean, literal, object, string, union } from "superstruct";
+import {
+  Infer,
+  boolean,
+  literal,
+  object,
+  string,
+  union,
+  number,
+} from "superstruct";
 
 // Superstruct types for runtime type checking
 export const ChannelStruct = object({
@@ -18,6 +26,13 @@ export const SavedChannelStruct = object({
   channel_id: string(),
 });
 
+export const auth0AccessTokenResponse = object({
+  access_token: string(),
+  scope: string(),
+  expires_in: number(),
+  token_type: string(),
+});
+
 export type Channel = Infer<typeof ChannelStruct>;
 export type User = Infer<typeof UserStruct>;
 export type SavedChannel = Infer<typeof SavedChannelStruct>;
@@ -25,3 +40,5 @@ export type SavedChannel = Infer<typeof SavedChannelStruct>;
 export type Database = Client | Pool;
 
 export type Table = "users" | "channels" | "saved_channels";
+
+export type Auth0AccessTokenResponse = Infer<typeof auth0AccessTokenResponse>;
