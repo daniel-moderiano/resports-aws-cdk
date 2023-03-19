@@ -25,7 +25,11 @@ export class APIGateway extends Construct {
     super(scope, id);
 
     // defines an API Gateway HTTP API resource
-    const httpApi = new HttpApi(this, "HttpApi");
+    const httpApi = new HttpApi(this, "HttpApi", {
+      corsPreflight: {
+        allowOrigins: ["*"],
+      },
+    });
     this.url = httpApi.url;
 
     // Define a JWT authorizer configured to accept Auth0 JWTs from a pre-specified Auth0 API
