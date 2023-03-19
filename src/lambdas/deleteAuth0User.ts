@@ -31,8 +31,6 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     });
   }
 
-  // Auth0 Request here
-
   // Get Management API Access Token
   const accessTokenResponse: AxiosResponse<Auth0AccessTokenResponse> =
     await axios.request({
@@ -48,13 +46,20 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     });
 
   const accessToken = accessTokenResponse.data.access_token;
-  console.log(accessToken);
+
+  // Use this access token to make a user delete request to the management API
+  // Request will succeed even if the user does not exist in the database (provided ID is in valid format)
+  await axios.request({
+    method: "DELETE",
+    url: `https://${auth0Config.AUTH0_DOMAIN}/api/v2/users/${userInformation.user_id}`,
+    headers: { authorization: `Bearer ${accessToken}` },
+  });
 
   return JSON.stringify({
     statusCode: 200,
     headers: { "Content-Type": "application/json" },
     body: {
-      message: "Initial setup correct",
+      message: "User deleted successfully",
     },
   });
 };
