@@ -1,6 +1,5 @@
 import "dotenv/config";
 import { cleanEnv, str } from "envalid";
-import { Client } from "pg";
 
 const env = cleanEnv(process.env, {
   DATABASE_USER: str(),
