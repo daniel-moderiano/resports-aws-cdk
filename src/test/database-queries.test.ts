@@ -17,6 +17,9 @@ import {
 } from "@/helpers";
 import { Channel, SavedChannel, User } from "@/types";
 
+// This is important to ensure timeout doesn't occur in the CI test pipeline
+jest.setTimeout(100000);
+
 // Uses an in-memory Postgres database for testing
 const testPool = new Pool({
   // DATABASE_URL will be automatically set during test setup by @databases/pg-test
