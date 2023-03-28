@@ -6,6 +6,11 @@ env:
   DATABASE_USER: user
   DATABASE_NAME: name
   DATABASE_HOST: host
+  AWS_DEV_ACCOUNT: 1234
+  AWS_DEV_REGION: region
+  AUTH0_DOMAIN: example
+  AUTH0_CLIENT_ID: example
+  AUTH0_CLIENT_SECRET: example
 
 on:
   # runs on pushes to the main branch

@@ -16,7 +16,10 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Missing channel ID.",
+        status: "fail",
+        data: {
+          channel: "Channel ID is required",
+        },
       },
     });
   }
@@ -26,7 +29,10 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Invalid channel ID.",
+        status: "fail",
+        data: {
+          channel: "Channel ID is incorrectly formatted",
+        },
       },
     });
   }
@@ -34,7 +40,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   const database = new Client({ ...databaseClientConfig });
   await database.connect();
 
-  const result = await deleteChannel(database, channelInformation.channel_id);
+  await deleteChannel(database, channelInformation.channel_id);
 
   await database.end();
 
@@ -42,10 +48,8 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     statusCode: 200,
     headers: { "Content-Type": "application/json" },
     body: {
-      message:
-        result.rowCount === 0
-          ? "No existing channel to delete"
-          : `Channel ${channelInformation.channel_id} deleted.`,
+      status: "success",
+      data: null,
     },
   });
 };

@@ -11,7 +11,10 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Missing request body.",
+        status: "fail",
+        data: {
+          channel: "Channel data is required",
+        },
       },
     });
   }
@@ -23,7 +26,10 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Invalid channel information.",
+        status: "fail",
+        data: {
+          channel: "Incorrect channel data format",
+        },
       },
     });
   }
@@ -39,7 +45,10 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     statusCode: 200,
     headers: { "Content-Type": "application/json" },
     body: {
-      message: "Channel added successfully",
+      status: "success",
+      data: {
+        channel: channelInformation,
+      },
     },
   });
 };

@@ -21,7 +21,10 @@ it("returns bad request for missing path params", async () => {
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Missing user ID.",
+        status: "fail",
+        data: {
+          user: "User ID is required",
+        },
       },
     })
   );
@@ -34,7 +37,10 @@ it("returns bad request for incorrect format of user information", async () => {
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Invalid user ID.",
+        status: "fail",
+        data: {
+          user: "User ID is invalid",
+        },
       },
     })
   );

@@ -13,7 +13,10 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Missing user and/or channel information.",
+        status: "fail",
+        data: {
+          savedChannel: "Channel and user data is required",
+        },
       },
     });
   }
@@ -23,7 +26,10 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Invalid user and/or channel information.",
+        status: "fail",
+        data: {
+          savedChannel: "Channel or user data is incorrectly formatted",
+        },
       },
     });
   }
@@ -43,8 +49,13 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     statusCode: 200,
     headers: { "Content-Type": "application/json" },
     body: {
-      message: "Operation successful",
-      data: result.rowCount === 0 ? null : result.rows[0],
+      status: "success",
+      data:
+        result.rowCount === 0
+          ? null
+          : {
+              savedChannel: result.rows[0],
+            },
     },
   });
 };

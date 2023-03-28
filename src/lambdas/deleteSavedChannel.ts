@@ -13,7 +13,10 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Missing user and/or channel information.",
+        status: "fail",
+        data: {
+          savedChannel: "Channel and user data is required",
+        },
       },
     });
   }
@@ -23,7 +26,10 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Invalid user and/or channel information.",
+        status: "fail",
+        data: {
+          savedChannel: "Channel or user data is incorrectly formatted",
+        },
       },
     });
   }
@@ -31,7 +37,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   const database = new Client({ ...databaseClientConfig });
   await database.connect();
 
-  const result = await safelyRemoveSavedChannel(
+  await safelyRemoveSavedChannel(
     database,
     savedChannelInformation.user_id,
     savedChannelInformation.channel_id
@@ -43,10 +49,8 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     statusCode: 200,
     headers: { "Content-Type": "application/json" },
     body: {
-      message:
-        result.rowCount === 0
-          ? "No existing channel to delete"
-          : "Saved channel deleted",
+      status: "success",
+      data: null,
     },
   });
 };

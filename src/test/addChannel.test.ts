@@ -22,7 +22,10 @@ it("returns bad request for missing body", async () => {
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Missing request body.",
+        status: "fail",
+        data: {
+          channel: "Channel data is required",
+        },
       },
     })
   );
@@ -35,7 +38,10 @@ it("returns bad request for incorrect format of channel information", async () =
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Invalid channel information.",
+        status: "fail",
+        data: {
+          channel: "Incorrect channel data format",
+        },
       },
     })
   );
