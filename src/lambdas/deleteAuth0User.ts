@@ -16,7 +16,10 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Missing user ID.",
+        status: "fail",
+        data: {
+          user: "User ID is required",
+        },
       },
     });
   }
@@ -26,7 +29,10 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Invalid user ID.",
+        status: "fail",
+        data: {
+          user: "User ID is invalid",
+        },
       },
     });
   }
@@ -59,7 +65,8 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     statusCode: 200,
     headers: { "Content-Type": "application/json" },
     body: {
-      message: "User deleted successfully",
+      status: "success",
+      data: null,
     },
   });
 };
