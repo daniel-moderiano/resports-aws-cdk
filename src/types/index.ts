@@ -42,3 +42,21 @@ export type Database = Client | Pool;
 export type Table = "users" | "channels" | "saved_channels";
 
 export type Auth0AccessTokenResponse = Infer<typeof auth0AccessTokenResponse>;
+
+// Defined using the JSend specification, see https://github.com/omniti-labs/jsend
+export type SuccessResponse = {
+  status: "success";
+  data: Record<string, unknown> | null;
+};
+
+export type FailResponse = {
+  status: "fail";
+  data: Record<string, unknown>;
+};
+
+export type ErrorResponse = {
+  status: "error";
+  message: string;
+  code?: number;
+  data?: string;
+};
