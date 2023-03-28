@@ -18,7 +18,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
       body: {
         status: "fail",
         data: {
-          user: "Channel ID is required",
+          channel: "Channel ID is required",
         },
       },
     });
@@ -31,7 +31,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
       body: {
         status: "fail",
         data: {
-          user: "Channel ID is incorrectly formatted",
+          channel: "Channel ID is incorrectly formatted",
         },
       },
     });

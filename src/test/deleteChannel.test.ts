@@ -23,7 +23,7 @@ it("returns bad request for missing path params", async () => {
       body: {
         status: "fail",
         data: {
-          user: "Channel ID is required",
+          channel: "Channel ID is required",
         },
       },
     })
@@ -39,7 +39,7 @@ it("returns bad request for incorrect format of channel information", async () =
       body: {
         status: "fail",
         data: {
-          user: "Channel ID is incorrectly formatted",
+          channel: "Channel ID is incorrectly formatted",
         },
       },
     })

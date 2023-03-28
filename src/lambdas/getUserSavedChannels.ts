@@ -16,7 +16,10 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Missing user information.",
+        status: "fail",
+        data: {
+          savedChannels: "User ID is required",
+        },
       },
     });
   }
@@ -26,7 +29,10 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        message: "Bad request. Invalid user information.",
+        status: "fail",
+        data: {
+          savedChannels: "User ID is invalid",
+        },
       },
     });
   }
@@ -45,8 +51,10 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     statusCode: 200,
     headers: { "Content-Type": "application/json" },
     body: {
-      message: "Operation successful",
-      data: result.rows,
+      status: "success",
+      data: {
+        savedChannels: result.rows,
+      },
     },
   });
 };
