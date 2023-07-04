@@ -1,12 +1,27 @@
-// // CHANNEL TABLE QUERIES
+import { ChannelModel } from "@/models";
+import { Document } from "mongoose";
 
-// export const insertChannel = async (channel: { _id: string; platform: string }): Promise<ChannelDocument | null> => {
-//   return await ChannelModel.findOneAndUpdate({ _id: channel._id }, channel, { upsert: true, new: true });
-// };
+// Mongo document types
+interface ChannelDocument extends Document {
+  _id: string;
+  platform: string;
+}
 
-// export const deleteChannel = async (channelId: string): Promise<ChannelDocument | null> => {
-//   return await ChannelModel.findByIdAndDelete(channelId);
-// };
+export const insertChannel = async (channel: {
+  _id: string;
+  platform: string;
+}): Promise<ChannelDocument | null> => {
+  return await ChannelModel.findOneAndUpdate({ _id: channel._id }, channel, {
+    upsert: true,
+    new: true,
+  });
+};
+
+export const deleteChannel = async (
+  channelId: string
+): Promise<ChannelDocument | null> => {
+  return await ChannelModel.findByIdAndDelete(channelId);
+};
 
 // // USER TABLE QUERIES
 
