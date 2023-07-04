@@ -1,10 +1,18 @@
-import { ChannelModel } from "@/models";
+import { ChannelModel, UserModel } from "@/models";
+import { SavedChannel } from "@/types";
 import { Document } from "mongoose";
 
 // Mongo document types
 interface ChannelDocument extends Document {
   _id: string;
   platform: string;
+}
+
+interface UserDocument extends Document {
+  _id: string;
+  email: string;
+  email_verified: boolean;
+  saved_channels: SavedChannel[];
 }
 
 export const insertChannel = async (channel: {
@@ -23,15 +31,24 @@ export const deleteChannel = async (
   return await ChannelModel.findByIdAndDelete(channelId);
 };
 
-// // USER TABLE QUERIES
+// USER TABLE QUERIES
 
-// export const upsertUser = async (user: { _id: string; email: string; email_verified: boolean }): Promise<UserDocument | null> => {
-//   return await UserModel.findOneAndUpdate({ _id: user._id }, user, { upsert: true, new: true });
-// };
+export const upsertUser = async (user: {
+  _id: string;
+  email: string;
+  email_verified: boolean;
+}): Promise<UserDocument | null> => {
+  return await UserModel.findOneAndUpdate({ _id: user._id }, user, {
+    upsert: true,
+    new: true,
+  });
+};
 
-// export const deleteUser = async (userId: string): Promise<UserDocument | null> => {
-//   return await UserModel.findByIdAndDelete(userId);
-// };
+export const deleteUser = async (
+  userId: string
+): Promise<UserDocument | null> => {
+  return await UserModel.findByIdAndDelete(userId);
+};
 
 // // SAVED CHANNELS TABLE QUERIES
 

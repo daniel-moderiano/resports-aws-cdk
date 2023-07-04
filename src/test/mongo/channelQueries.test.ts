@@ -1,6 +1,8 @@
 import { deleteChannel, insertChannel } from "@/helpers/monogDbHelpers";
-import "./mongoTestSetup";
 import { ChannelModel } from "@/models";
+
+// Critical to ensure proper database setup and teardown
+import "./mongoTestSetup";
 
 describe("MongoDB Channel Helper Functions", () => {
   const testChannel = {

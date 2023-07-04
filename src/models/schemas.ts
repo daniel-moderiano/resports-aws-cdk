@@ -10,7 +10,7 @@ const SavedChannelSchema = new Schema({
 });
 
 const UserSchema = new Schema({
-  _id: { type: String, required: true, unique: true },
+  _id: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   email_verified: { type: Boolean, required: true },
   savedChannels: [SavedChannelSchema],
