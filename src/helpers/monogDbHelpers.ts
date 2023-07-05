@@ -15,11 +15,15 @@ interface UserDocument extends Document {
   saved_channels: SavedChannel[];
 }
 
+export interface SavedChannelDocument extends Document {
+  channel_id: string;
+}
+
 export const insertChannel = async (channel: {
   _id: string;
   platform: string;
 }): Promise<ChannelDocument | null> => {
-  return await ChannelModel.findOneAndUpdate({ _id: channel._id }, channel, {
+  return ChannelModel.findOneAndUpdate({ _id: channel._id }, channel, {
     upsert: true,
     new: true,
   });
@@ -28,7 +32,7 @@ export const insertChannel = async (channel: {
 export const deleteChannel = async (
   channelId: string
 ): Promise<ChannelDocument | null> => {
-  return await ChannelModel.findByIdAndDelete(channelId);
+  return ChannelModel.findByIdAndDelete(channelId);
 };
 
 // USER TABLE QUERIES
@@ -38,7 +42,7 @@ export const upsertUser = async (user: {
   email: string;
   email_verified: boolean;
 }): Promise<UserDocument | null> => {
-  return await UserModel.findOneAndUpdate({ _id: user._id }, user, {
+  return UserModel.findOneAndUpdate({ _id: user._id }, user, {
     upsert: true,
     new: true,
   });
@@ -47,31 +51,35 @@ export const upsertUser = async (user: {
 export const deleteUser = async (
   userId: string
 ): Promise<UserDocument | null> => {
-  return await UserModel.findByIdAndDelete(userId);
+  return UserModel.findByIdAndDelete(userId);
 };
 
-// // SAVED CHANNELS TABLE QUERIES
+// SAVED CHANNELS TABLE QUERIES
 
-// export const selectSavedChannelByUserAndChannel = async (userId: string, channelId: string): Promise<UserDocument | null> => {
-//   return await UserModel.findOne({ _id: userId, 'savedChannels.channel': channelId }, { 'savedChannels.$': 1 });
-// };
+export const selectSavedChannelsByUserId = async (
+  userId: string
+): Promise<SavedChannelDocument[] | null> => {
+  const user = await UserModel.findById(userId);
 
-// export const selectSavedChannelsByChannelId = async (channelId: string): Promise<UserDocument[] | null> => {
-//   return await UserModel.find({ 'savedChannels.channel': channelId }, { 'savedChannels.$': 1 });
-// };
+  if (!user) {
+    return null;
+  }
+  return user.savedChannels;
+};
 
-// export const selectSavedChannelsByUserId = async (userId: string): Promise<SavedChannelDocument[] | undefined> => {
-//   const user = await UserModel.findById(userId);
-//   return user?.savedChannels;
-// };
+export const insertSavedChannel = async (userId: string, channelId: string) => {
+  return UserModel.updateOne(
+    { _id: userId },
+    { $addToSet: { savedChannels: { channel_id: channelId } } }
+  );
+};
 
-// export const insertSavedChannel = async (userId: string, channelId: string) => {
-//   return await UserModel.updateOne({ _id: userId }, { $addToSet: { savedChannels: { channel: channelId } } });
-// };
-
-// export const deleteSavedChannel = async (userId: string, channelId: string) => {
-//   return await UserModel.updateOne({ _id: userId }, { $pull: { savedChannels: { channel: channelId } } });
-// };
+export const deleteSavedChannel = async (userId: string, channelId: string) => {
+  return UserModel.updateOne(
+    { _id: userId },
+    { $pull: { savedChannels: { channel_id: channelId } } }
+  );
+};
 
 // // COMPOUND/ADVANCED QUERIES
 
