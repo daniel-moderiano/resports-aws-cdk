@@ -26,11 +26,6 @@ export class SavedChannelApiRoutes extends Construct {
       timeout: Duration.seconds(30),
     };
 
-    const getSavedChannel = new NodejsFunction(this, "GetSavedChannelHandler", {
-      entry: join(__dirname, "/../lambdas", "getSavedChannel.ts"),
-      ...nodeJsFunctionProps,
-    });
-
     const addSavedChannel = new NodejsFunction(this, "AddSavedChannelHandler", {
       entry: join(__dirname, "/../lambdas", "addSavedChannel.ts"),
       ...nodeJsFunctionProps,
@@ -45,11 +40,6 @@ export class SavedChannelApiRoutes extends Construct {
       }
     );
 
-    const getSavedChannelIntegration = new HttpLambdaIntegration(
-      "GetSavedChannelIntegration",
-      getSavedChannel
-    );
-
     const addSavedChannelIntegration = new HttpLambdaIntegration(
       "AddSavedChannelIntegration",
       addSavedChannel
@@ -59,13 +49,6 @@ export class SavedChannelApiRoutes extends Construct {
       "DeleteSavedChannelIntegration",
       deleteSavedChannel
     );
-
-    httpApi.addRoutes({
-      path: "/saved-channels",
-      methods: [HttpMethod.GET],
-      integration: getSavedChannelIntegration,
-      authorizer,
-    });
 
     httpApi.addRoutes({
       path: "/saved-channels",
