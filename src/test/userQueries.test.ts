@@ -1,4 +1,4 @@
-import { upsertUser, deleteUser } from "@/helpers/monogDbHelpers";
+import { upsertUser, deleteUser } from "@/helpers/dbQueryFunctions";
 import { UserModel } from "@/models";
 
 // Critical to ensure proper database setup and teardown

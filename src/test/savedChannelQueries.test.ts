@@ -3,7 +3,7 @@ import {
   getAllSavedChannelsForUser,
   removeOrphanChannel,
   removeSavedChannel,
-} from "@/helpers/monogDbHelpers";
+} from "@/helpers/dbQueryFunctions";
 import { UserModel, ChannelModel } from "@/models";
 
 // Critical to ensure proper database setup and teardown

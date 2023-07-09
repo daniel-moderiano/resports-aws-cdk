@@ -1,4 +1,4 @@
-import { deleteChannel, insertChannel } from "@/helpers/monogDbHelpers";
+import { deleteChannel, insertChannel } from "@/helpers/dbQueryFunctions";
 import { ChannelModel } from "@/models";
 import { Channel } from "@/types";
 
