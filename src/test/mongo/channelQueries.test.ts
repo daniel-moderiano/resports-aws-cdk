@@ -1,11 +1,12 @@
 import { deleteChannel, insertChannel } from "@/helpers/monogDbHelpers";
 import { ChannelModel } from "@/models";
+import { Channel } from "@/types";
 
 // Critical to ensure proper database setup and teardown
 import "./mongoTestSetup";
 
 describe("MongoDB Channel Helper Functions", () => {
-  const testChannel = {
+  const testChannel: Channel = {
     _id: "test",
     platform: "twitch",
   };

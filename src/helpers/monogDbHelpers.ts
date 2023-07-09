@@ -1,14 +1,19 @@
-import { ChannelModel, PopulatedUserDocument, UserModel } from "@/models";
-import { ChannelDocument, UserDocument } from "@/models";
+import { ChannelModel, UserModel } from "@/models";
+import {
+  ChannelDocument,
+  UserDocument,
+  PopulatedUserDocument,
+  Channel,
+  User,
+} from "@/types";
 import { Document } from "mongoose";
 export interface SavedChannelDocument extends Document {
   channel_id: string;
 }
 
-export const insertChannel = async (channel: {
-  _id: string;
-  platform: string;
-}): Promise<ChannelDocument | null> => {
+export const insertChannel = async (
+  channel: Channel
+): Promise<ChannelDocument | null> => {
   return ChannelModel.findOneAndUpdate({ _id: channel._id }, channel, {
     upsert: true,
     new: true,
@@ -23,11 +28,9 @@ export const deleteChannel = async (
 
 // USER TABLE QUERIES
 
-export const upsertUser = async (user: {
-  _id: string;
-  email: string;
-  email_verified: boolean;
-}): Promise<UserDocument | null> => {
+export const upsertUser = async (
+  user: Omit<User, "saved_channels">
+): Promise<UserDocument | null> => {
   return UserModel.findOneAndUpdate({ _id: user._id }, user, {
     upsert: true,
     new: true,

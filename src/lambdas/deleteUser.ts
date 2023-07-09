@@ -1,7 +1,6 @@
 import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { is, object, string } from "superstruct";
 import { databaseClientConfig } from "@/config";
-import { removeAllUserSavedChannels, deleteUser } from "@/helpers";
 import { Client } from "pg";
 
 const UserIdStruct = object({
@@ -40,19 +39,22 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   const database = new Client({ ...databaseClientConfig });
   await database.connect();
 
-  await removeAllUserSavedChannels(database, userInformation.user_id);
-  await deleteUser(database, userInformation.user_id);
+  // TODO: delete user with new mongo helpers
+  return;
 
-  await database.end();
+  // await removeAllUserSavedChannels(database, userInformation.user_id);
+  // await deleteUser(database, userInformation.user_id);
 
-  return JSON.stringify({
-    statusCode: 200,
-    headers: { "Content-Type": "application/json" },
-    body: {
-      body: {
-        status: "success",
-        data: null,
-      },
-    },
-  });
+  // await database.end();
+
+  // return JSON.stringify({
+  //   statusCode: 200,
+  //   headers: { "Content-Type": "application/json" },
+  //   body: {
+  //     body: {
+  //       status: "success",
+  //       data: null,
+  //     },
+  //   },
+  // });
 };

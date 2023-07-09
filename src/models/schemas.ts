@@ -1,21 +1,5 @@
-import mongoose, { Document, Schema } from "mongoose";
-
-export interface ChannelDocument extends Document {
-  _id: string;
-  platform: string;
-}
-
-export interface UserDocument extends Document {
-  _id: string;
-  email: string;
-  email_verified: boolean;
-  saved_channels: ChannelDocument["_id"][];
-}
-
-export interface PopulatedUserDocument
-  extends Omit<UserDocument, "saved_channels"> {
-  saved_channels: ChannelDocument[];
-}
+import { ChannelDocument, UserDocument } from "@/types";
+import mongoose, { Schema } from "mongoose";
 
 const ChannelSchema = new Schema({
   _id: { type: String, required: true }, // This will be the YouTube or Twitch ID
