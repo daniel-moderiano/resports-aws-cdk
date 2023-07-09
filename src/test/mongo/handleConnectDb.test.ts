@@ -1,6 +1,5 @@
-import { handleDbConnection } from "@/helpers/handleConnectDb";
-import { connectDb } from "@/config/mongo";
-import { createErrorResponse } from "@/helpers/apiResonseGenerator";
+import { handleDbConnection, createErrorResponse } from "@/helpers";
+import { connectDb } from "@/config";
 
 jest.mock("@/config/mongo");
 

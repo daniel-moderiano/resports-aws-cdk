@@ -1,4 +1,4 @@
-import { connectDb } from "@/config/mongo";
+import { connectDb } from "@/config";
 import { createErrorResponse } from "./apiResonseGenerator";
 /**
  * Abstracts the common DB connection operation in lambda handlers.

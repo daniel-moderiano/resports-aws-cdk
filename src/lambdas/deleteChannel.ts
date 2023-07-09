@@ -1,7 +1,11 @@
 import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { is, object, string } from "superstruct";
-import { databaseClientConfig } from "@/config";
-import { Client } from "pg";
+import {
+  createFailResponse,
+  createSuccessResponse,
+  deleteChannel,
+  handleDbConnection,
+} from "@/helpers";
 
 const ChannelIdStruct = object({
   channel_id: string(),
@@ -11,47 +15,27 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   const channelInformation = event.pathParameters;
 
   if (!channelInformation) {
-    return JSON.stringify({
-      statusCode: 400,
-      headers: { "Content-Type": "application/json" },
-      body: {
-        status: "fail",
-        data: {
-          channel: "Channel ID is required",
-        },
-      },
+    return createFailResponse(400, {
+      channel: "Channel ID is required",
     });
   }
 
   if (!is(channelInformation, ChannelIdStruct)) {
-    return JSON.stringify({
-      statusCode: 400,
-      headers: { "Content-Type": "application/json" },
-      body: {
-        status: "fail",
-        data: {
-          channel: "Channel ID is incorrectly formatted",
-        },
-      },
+    return createFailResponse(400, {
+      channel: "Channel ID is incorrectly formatted",
     });
   }
 
-  const database = new Client({ ...databaseClientConfig });
-  await database.connect();
+  const errorResponse = await handleDbConnection();
+  if (errorResponse) return errorResponse;
 
-  // TODO: use new mongo helper
-  return;
+  const deletedChannel = await deleteChannel(channelInformation.channel_id);
 
-  // await deleteChannel(database, channelInformation.channel_id);
-
-  // await database.end();
-
-  // return JSON.stringify({
-  //   statusCode: 200,
-  //   headers: { "Content-Type": "application/json" },
-  //   body: {
-  //     status: "success",
-  //     data: null,
-  //   },
-  // });
+  if (deletedChannel) {
+    return createSuccessResponse(204, null);
+  } else {
+    return createFailResponse(500, {
+      channel: "Error occurred while attempting to deleting channel",
+    });
+  }
 };
