@@ -24,7 +24,7 @@ it("returns bad request for missing body", async () => {
       body: {
         status: "fail",
         data: {
-          user: "User data is required",
+          user: "User data is required.",
         },
       },
     })
@@ -40,7 +40,7 @@ it("returns bad request for incorrect format of user information", async () => {
       body: {
         status: "fail",
         data: {
-          user: "User data is incorrectly formatted",
+          user: "User data is invalid.",
         },
       },
     })

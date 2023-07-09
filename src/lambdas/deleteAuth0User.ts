@@ -3,6 +3,7 @@ import { is, object, string } from "superstruct";
 import axios, { AxiosResponse } from "axios";
 import { auth0Config } from "@/config/auth0";
 import { Auth0AccessTokenResponse } from "@/types";
+import { createFailResponse, createSuccessResponse } from "@/helpers";
 
 const UserIdStruct = object({
   user_id: string(),
@@ -12,28 +13,14 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   const userInformation = event.pathParameters;
 
   if (!userInformation) {
-    return JSON.stringify({
-      statusCode: 400,
-      headers: { "Content-Type": "application/json" },
-      body: {
-        status: "fail",
-        data: {
-          user: "User ID is required",
-        },
-      },
+    return createFailResponse(400, {
+      user: "User ID is required.",
     });
   }
 
   if (!is(userInformation, UserIdStruct)) {
-    return JSON.stringify({
-      statusCode: 400,
-      headers: { "Content-Type": "application/json" },
-      body: {
-        status: "fail",
-        data: {
-          user: "User ID is invalid",
-        },
-      },
+    return createFailResponse(400, {
+      user: "User ID is invalid.",
     });
   }
 
@@ -61,12 +48,5 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     headers: { authorization: `Bearer ${accessToken}` },
   });
 
-  return JSON.stringify({
-    statusCode: 200,
-    headers: { "Content-Type": "application/json" },
-    body: {
-      status: "success",
-      data: null,
-    },
-  });
+  return createSuccessResponse(204, null);
 };

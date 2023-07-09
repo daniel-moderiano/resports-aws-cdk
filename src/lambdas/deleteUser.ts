@@ -1,7 +1,12 @@
 import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { is, object, string } from "superstruct";
-import { databaseClientConfig } from "@/config";
-import { Client } from "pg";
+import {
+  createFailResponse,
+  createSuccessResponse,
+  deleteUser,
+  handleDbConnection,
+  removeOrphanChannel,
+} from "@/helpers";
 
 const UserIdStruct = object({
   user_id: string(),
@@ -11,50 +16,34 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   const userInformation = event.pathParameters;
 
   if (!userInformation) {
-    return JSON.stringify({
-      statusCode: 400,
-      headers: { "Content-Type": "application/json" },
-      body: {
-        status: "fail",
-        data: {
-          user: "User ID is required",
-        },
-      },
+    return createFailResponse(400, {
+      user: "User ID is required.",
     });
   }
 
   if (!is(userInformation, UserIdStruct)) {
-    return JSON.stringify({
-      statusCode: 400,
-      headers: { "Content-Type": "application/json" },
-      body: {
-        status: "fail",
-        data: {
-          user: "User ID is invalid",
-        },
-      },
+    return createFailResponse(400, {
+      user: "User ID is invalid.",
     });
   }
 
-  const database = new Client({ ...databaseClientConfig });
-  await database.connect();
+  const errorResponse = await handleDbConnection();
+  if (errorResponse) return errorResponse;
 
-  // TODO: delete user with new mongo helpers
-  return;
+  const deletedUser = await deleteUser(userInformation.user_id);
 
-  // await removeAllUserSavedChannels(database, userInformation.user_id);
-  // await deleteUser(database, userInformation.user_id);
+  if (!deletedUser) {
+    return createFailResponse(500, {
+      user: "Error occurred while attempting to delete user",
+    });
+  }
 
-  // await database.end();
+  // user deleted - remove any orphan channels associated with deleted user
+  await Promise.all(
+    deletedUser.saved_channels.map((channel) => removeOrphanChannel(channel))
+  );
 
-  // return JSON.stringify({
-  //   statusCode: 200,
-  //   headers: { "Content-Type": "application/json" },
-  //   body: {
-  //     body: {
-  //       status: "success",
-  //       data: null,
-  //     },
-  //   },
-  // });
+  return createSuccessResponse(204, {
+    user: deletedUser,
+  });
 };

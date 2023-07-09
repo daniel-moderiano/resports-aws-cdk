@@ -23,7 +23,7 @@ it("returns bad request for missing path params", async () => {
       body: {
         status: "fail",
         data: {
-          user: "User ID is required",
+          user: "User ID is required.",
         },
       },
     })
@@ -39,7 +39,7 @@ it("returns bad request for incorrect format of user information", async () => {
       body: {
         status: "fail",
         data: {
-          user: "User ID is invalid",
+          user: "User ID is invalid.",
         },
       },
     })
