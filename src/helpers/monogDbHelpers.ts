@@ -1,20 +1,6 @@
-import { ChannelModel, UserModel } from "@/models";
-import { SavedChannel } from "@/types";
+import { ChannelModel, PopulatedUserDocument, UserModel } from "@/models";
+import { ChannelDocument, UserDocument } from "@/models";
 import { Document } from "mongoose";
-
-// Mongo document types
-interface ChannelDocument extends Document {
-  _id: string;
-  platform: string;
-}
-
-interface UserDocument extends Document {
-  _id: string;
-  email: string;
-  email_verified: boolean;
-  saved_channels: SavedChannel[];
-}
-
 export interface SavedChannelDocument extends Document {
   channel_id: string;
 }
@@ -56,62 +42,51 @@ export const deleteUser = async (
 
 // SAVED CHANNELS TABLE QUERIES
 
-export const selectSavedChannelsByUserId = async (
-  userId: string
-): Promise<SavedChannelDocument[] | null> => {
-  const user = await UserModel.findById(userId);
+export const addSavedChannelForUser = async (
+  userId: string,
+  channelId: string
+): Promise<PopulatedUserDocument> => {
+  const channel = await ChannelModel.findById(channelId);
+  if (!channel) {
+    throw new Error("Channel does not exist");
+  }
+
+  const user = (await UserModel.findByIdAndUpdate(
+    userId,
+    { $addToSet: { saved_channels: channelId } },
+    { new: true }
+  ).populate("saved_channels")) as PopulatedUserDocument | null;
 
   if (!user) {
-    return null;
+    throw new Error("User not found");
   }
-  return user.savedChannels;
+
+  return user;
 };
 
-export const insertSavedChannel = async (userId: string, channelId: string) => {
+export const getAllSavedChannelsForUser = async (
+  userId: string
+): Promise<ChannelDocument[]> => {
+  const user = (await UserModel.findById(userId).populate(
+    "saved_channels"
+  )) as PopulatedUserDocument | null;
+  return user ? user.saved_channels : [];
+};
+
+// Function to remove the channel from a user's saved channels
+export const removeSavedChannel = async (userId: string, channelId: string) => {
   return UserModel.updateOne(
     { _id: userId },
-    { $addToSet: { savedChannels: { channel_id: channelId } } }
+    { $pull: { saved_channels: channelId } }
   );
 };
 
-export const deleteSavedChannel = async (userId: string, channelId: string) => {
-  return UserModel.updateOne(
-    { _id: userId },
-    { $pull: { savedChannels: { channel_id: channelId } } }
-  );
+export const removeOrphanChannel = async (channelId: string) => {
+  // Check if any other users still have this channel in their saved channels
+  const user = await UserModel.findOne({ saved_channels: channelId });
+
+  // If no user has this channel in their saved channels, delete the channel
+  if (!user) {
+    await ChannelModel.findByIdAndDelete(channelId);
+  }
 };
-
-// // COMPOUND/ADVANCED QUERIES
-
-// export const filterByAssociatedSavedChannels = async (channelIds: string[]): Promise<string[]> => {
-//   const channelsWithNoAssociatedSavedChannel: string[] = [];
-//   for (let i = 0; i < channelIds.length; i++) {
-//     const result = await selectSavedChannelsByChannelId(channelIds[i]);
-//     if (!result || result.length === 0) {
-//       channelsWithNoAssociatedSavedChannel.push(channelIds[i]);
-//     }
-//   }
-
-//   return channelsWithNoAssociatedSavedChannel;
-// };
-
-// export const safelyRemoveSavedChannel = async (userId: string, channelId: string) => {
-//   await deleteSavedChannel(userId, channelId);
-
-//   const channelsSafeToDelete = await filterByAssociatedSavedChannels([channelId]);
-
-//   if (channelsSafeToDelete.length === 1) {
-//     await deleteChannel(channelId);
-//   }
-
-//   return;
-// };
-
-// export const removeAllUserSavedChannels = async (userId: string) => {
-//   const user = await UserModel.findById(userId);
-//   if (!user) throw new Error('User not found');
-
-//   for (let i = 0; i < user.savedChannels.length; i++) {
-//     await safelyRemoveSavedChannel(userId, user.savedChannels[i].channel_id);
-//   }
-// };

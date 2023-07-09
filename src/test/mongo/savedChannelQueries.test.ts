@@ -1,81 +1,67 @@
 import {
-  selectSavedChannelsByUserId,
-  insertSavedChannel,
-  deleteSavedChannel,
-  upsertUser,
-  insertChannel,
+  addSavedChannelForUser,
+  getAllSavedChannelsForUser,
+  removeOrphanChannel,
+  removeSavedChannel,
 } from "@/helpers/monogDbHelpers";
+import { UserModel, ChannelModel } from "@/models";
 
 // Critical to ensure proper database setup and teardown
 import "./mongoTestSetup";
 
-describe("MongoDB SavedChannel Helper Functions", () => {
-  const testUser = {
-    _id: "testUser",
-    email: "testEmail@test.com",
-    email_verified: true,
-  };
-
-  const testChannel = {
-    _id: "test",
-    platform: "twitch",
-  };
+describe("User and Channel helpers", () => {
+  let user1Id: string;
+  let channelId: string;
 
   beforeEach(async () => {
-    const newUser = await upsertUser(testUser);
-    expect(newUser).not.toBeNull();
-
-    const insertedChannel = await insertChannel({
-      _id: testChannel._id,
-      platform: testChannel.platform,
+    // Create a new user and channel for each test
+    const user1 = new UserModel({
+      _id: "testUser1",
+      email: "user1@example.com",
+      email_verified: true,
+    });
+    const channel = new ChannelModel({
+      _id: "testChannel1",
+      platform: "youtube",
     });
 
-    expect(insertedChannel).not.toBeNull();
-    await insertSavedChannel(testUser._id, testChannel._id);
+    user1Id = user1._id;
+    channelId = channel._id;
+
+    await user1.save();
+    await channel.save();
   });
 
-  it("should select all saved channels by a given user ID", async () => {
-    const savedChannels = await selectSavedChannelsByUserId(testUser._id);
-    expect(savedChannels).not.toBeNull();
-
-    if (savedChannels) {
-      expect(savedChannels.length).toBeGreaterThan(0);
-      expect(savedChannels[0].channel_id).toEqual(testChannel._id);
-    }
+  it("should add a saved channel for a user", async () => {
+    const userWithNewChannel = await addSavedChannelForUser(user1Id, channelId);
+    expect(userWithNewChannel.saved_channels[0]._id).toEqual(channelId);
   });
 
-  it("should insert a saved channel", async () => {
-    const newChannel = await insertChannel({
-      _id: "test2",
-      platform: "testPlatform2",
-    });
-
-    expect(newChannel).not.toBeNull();
-
-    if (newChannel) {
-      await insertSavedChannel(testUser._id, newChannel._id);
-
-      const savedChannels = await selectSavedChannelsByUserId(testUser._id);
-      expect(savedChannels).not.toBeNull();
-
-      if (savedChannels) {
-        expect(
-          savedChannels.some((channel) => channel.channel_id === newChannel._id)
-        ).toBe(true);
-      }
-    }
+  it("should get all saved channels for a user", async () => {
+    await addSavedChannelForUser(user1Id, channelId);
+    const savedChannels = await getAllSavedChannelsForUser(user1Id);
+    expect(savedChannels[0]._id).toEqual(channelId);
   });
 
-  it("should delete a saved channel", async () => {
-    await deleteSavedChannel(testUser._id, testChannel._id);
+  it("should remove a saved channel from a user", async () => {
+    await addSavedChannelForUser(user1Id, channelId);
+    await removeSavedChannel(user1Id, channelId);
+    const savedChannels = await getAllSavedChannelsForUser(user1Id);
+    expect(savedChannels).toHaveLength(0);
+  });
 
-    const savedChannels = await selectSavedChannelsByUserId(testUser._id);
-    expect(savedChannels).not.toBeNull();
+  it("should remove an orphan channel", async () => {
+    await addSavedChannelForUser(user1Id, channelId);
+    await removeSavedChannel(user1Id, channelId);
+    await removeOrphanChannel(channelId);
+    const channel = await ChannelModel.findById(channelId);
+    expect(channel).toBeNull();
+  });
 
-    if (savedChannels) {
-      expect(
-        savedChannels.some((channel) => channel.channel_id === testChannel._id)
-      ).toBe(false);
-    }
+  it("should not remove an channel if it is not orphaned", async () => {
+    await addSavedChannelForUser(user1Id, channelId);
+    await removeOrphanChannel(channelId);
+    const channel = await ChannelModel.findById(channelId);
+    expect(channel).not.toBeNull();
   });
 });
