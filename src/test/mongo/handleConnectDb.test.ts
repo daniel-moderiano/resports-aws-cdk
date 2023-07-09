@@ -1,0 +1,24 @@
+import { handleDbConnection } from "@/helpers/handleConnectDb";
+import { connectDb } from "@/config/mongo";
+import { createErrorResponse } from "@/helpers/apiResonseGenerator";
+
+jest.mock("@/config/mongo");
+
+describe("DB Handler", () => {
+  it("should return null when connection to the database is successful", async () => {
+    (connectDb as jest.Mock).mockResolvedValue(undefined);
+    const result = await handleDbConnection();
+    expect(result).toBeNull();
+  });
+
+  it("should return an error response when connection fails", async () => {
+    (connectDb as jest.Mock).mockRejectedValue(new Error());
+    const result = await handleDbConnection();
+    expect(result).toEqual(
+      createErrorResponse(
+        500,
+        "An error occurred while attempting to connect to the database."
+      )
+    );
+  });
+});
