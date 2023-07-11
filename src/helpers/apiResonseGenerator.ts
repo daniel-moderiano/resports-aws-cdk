@@ -28,7 +28,7 @@ export const createFailResponse = (statusCode: number, data: object) => {
 export const createErrorResponse = (
   statusCode: number,
   message: string,
-  data: object = {}
+  data: object | null = null
 ) => {
   return JSON.stringify({
     statusCode: statusCode,

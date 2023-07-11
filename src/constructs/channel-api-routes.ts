@@ -21,7 +21,7 @@ export class ChannelApiRoutes extends Construct {
     const nodeJsFunctionProps: NodejsFunctionProps = {
       runtime: Runtime.NODEJS_16_X,
       vpc: vpc,
-      vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
+      vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
       environment: databaseConfig,
       timeout: Duration.seconds(30),
     };

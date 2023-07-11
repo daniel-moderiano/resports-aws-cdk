@@ -25,6 +25,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
       user: "User ID is invalid.",
     });
   }
+  console.log("Attempting DB connection");
 
   const errorResponse = await handleDbConnection();
   if (errorResponse) return errorResponse;
