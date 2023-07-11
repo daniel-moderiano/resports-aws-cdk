@@ -8,6 +8,7 @@ import {
   union,
   number,
   array,
+  optional,
 } from "superstruct";
 
 // Superstruct types for runtime type checking
@@ -20,7 +21,7 @@ export const UserStruct = object({
   _id: string(),
   email: string(),
   email_verified: boolean(),
-  saved_channels: array(string()),
+  saved_channels: optional(array(string())),
 });
 
 export const PopulatedUserStruct = object({

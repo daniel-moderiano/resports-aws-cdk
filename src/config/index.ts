@@ -1,2 +1,2 @@
 export * from "./mongo";
-export * from "./databaseEnv";
+export * from "./lambdaEnv";

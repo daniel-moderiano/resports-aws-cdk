@@ -1,9 +1,9 @@
 import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { is, object, string } from "superstruct";
 import axios, { AxiosResponse } from "axios";
-import { auth0Config } from "@/config/auth0";
 import { Auth0AccessTokenResponse } from "@/types";
 import { createFailResponse, createSuccessResponse } from "@/helpers";
+import { lambdaEnv } from "@/config";
 
 const UserIdStruct = object({
   user_id: string(),
@@ -28,13 +28,13 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   const accessTokenResponse: AxiosResponse<Auth0AccessTokenResponse> =
     await axios.request({
       method: "POST",
-      url: `https://${auth0Config.AUTH0_DOMAIN}/oauth/token`,
+      url: `https://${lambdaEnv.AUTH0_DOMAIN}/oauth/token`,
       headers: { "content-type": "application/x-www-form-urlencoded" },
       data: new URLSearchParams({
         grant_type: "client_credentials",
-        client_id: auth0Config.AUTH0_CLIENT_ID,
-        client_secret: auth0Config.AUTH0_CLIENT_SECRET,
-        audience: `https://${auth0Config.AUTH0_DOMAIN}/api/v2/`,
+        client_id: lambdaEnv.AUTH0_CLIENT_ID,
+        client_secret: lambdaEnv.AUTH0_CLIENT_SECRET,
+        audience: `https://${lambdaEnv.AUTH0_DOMAIN}/api/v2/`,
       }),
     });
 
@@ -44,7 +44,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   // Request will succeed even if the user does not exist in the database (provided ID is in valid format)
   await axios.request({
     method: "DELETE",
-    url: `https://${auth0Config.AUTH0_DOMAIN}/api/v2/users/${userInformation.user_id}`,
+    url: `https://${lambdaEnv.AUTH0_DOMAIN}/api/v2/users/${userInformation.user_id}`,
     headers: { authorization: `Bearer ${accessToken}` },
   });
 

@@ -7,11 +7,10 @@ import {
 import { Construct } from "constructs";
 import { join } from "path";
 import { SubnetType } from "aws-cdk-lib/aws-ec2";
-import { databaseConfig } from "@/config";
 import { Duration } from "aws-cdk-lib";
 import { ApiRoutesProps } from "./http-api";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
-import { auth0Config } from "@/config/auth0";
+import { lambdaEnv } from "@/config/lambdaEnv";
 
 export class UserApiRoutes extends Construct {
   constructor(scope: Construct, id: string, props: ApiRoutesProps) {
@@ -23,7 +22,7 @@ export class UserApiRoutes extends Construct {
       runtime: Runtime.NODEJS_16_X,
       vpc: vpc,
       vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
-      environment: databaseConfig,
+      environment: lambdaEnv,
       timeout: Duration.seconds(30),
     };
 
@@ -39,8 +38,7 @@ export class UserApiRoutes extends Construct {
 
     const deleteAuth0User = new NodejsFunction(this, "DeleteAuth0UserHandler", {
       entry: join(__dirname, "/../lambdas", "deleteAuth0User.ts"),
-      runtime: Runtime.NODEJS_16_X,
-      environment: auth0Config,
+      ...nodeJsFunctionProps,
     });
 
     const getUserSavedChannels = new NodejsFunction(
