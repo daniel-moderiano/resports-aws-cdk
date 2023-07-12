@@ -1,8 +1,11 @@
 import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { is, object, string } from "superstruct";
-import { selectSavedChannelsByUserId } from "@/helpers";
-import { databaseClientConfig } from "@/config";
-import { Client } from "pg";
+import {
+  createFailResponse,
+  createSuccessResponse,
+  getAllSavedChannelsForUser,
+  handleDbConnection,
+} from "@/helpers";
 
 const UserIdStruct = object({
   user_id: string(),
@@ -12,49 +15,31 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   const userInformation = event.pathParameters;
 
   if (!userInformation) {
-    return JSON.stringify({
-      statusCode: 400,
-      headers: { "Content-Type": "application/json" },
-      body: {
-        status: "fail",
-        data: {
-          savedChannels: "User ID is required",
-        },
-      },
+    return createFailResponse(400, {
+      user: "User ID is missing.",
     });
   }
 
   if (!is(userInformation, UserIdStruct)) {
-    return JSON.stringify({
-      statusCode: 400,
-      headers: { "Content-Type": "application/json" },
-      body: {
-        status: "fail",
-        data: {
-          savedChannels: "User ID is invalid",
-        },
-      },
+    return createFailResponse(400, {
+      user: "User ID is invalid.",
     });
   }
 
-  const database = new Client({ ...databaseClientConfig });
-  await database.connect();
+  const errorResponse = await handleDbConnection();
+  if (errorResponse) return errorResponse;
 
-  const result = await selectSavedChannelsByUserId(
-    database,
+  const savedChannels = await getAllSavedChannelsForUser(
     userInformation.user_id
   );
 
-  await database.end();
-
-  return JSON.stringify({
-    statusCode: 200,
-    headers: { "Content-Type": "application/json" },
-    body: {
-      status: "success",
-      data: {
-        savedChannels: result.rows,
-      },
-    },
-  });
+  if (savedChannels) {
+    return createSuccessResponse(200, {
+      savedChannels,
+    });
+  } else {
+    return createFailResponse(500, {
+      savedChannels: "Failed to retrieve saved channels.",
+    });
+  }
 };

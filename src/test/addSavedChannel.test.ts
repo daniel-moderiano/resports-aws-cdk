@@ -10,7 +10,7 @@ const eventNoBody: APIGatewayProxyEventV2 = {
 const eventBadSavedChannel: APIGatewayProxyEventV2 = {
   ...mockEvent,
   body: JSON.stringify({
-    user_id: "1234",
+    userId: "1234",
     platform: "twitch",
   }),
 };
@@ -24,7 +24,7 @@ it("returns bad request for missing body", async () => {
       body: {
         status: "fail",
         data: {
-          savedChannel: "Channel and user data is required",
+          savedChannel: "User and/or channel data is missing.",
         },
       },
     })
@@ -44,7 +44,7 @@ it("returns bad request for incorrect format of channel information", async () =
       body: {
         status: "fail",
         data: {
-          savedChannel: "Incorrect channel or user data format",
+          savedChannel: "Incorrect user and/or channel data.",
         },
       },
     })

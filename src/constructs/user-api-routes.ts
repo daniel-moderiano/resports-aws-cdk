@@ -7,11 +7,10 @@ import {
 import { Construct } from "constructs";
 import { join } from "path";
 import { SubnetType } from "aws-cdk-lib/aws-ec2";
-import { databaseConfig } from "../config/database";
 import { Duration } from "aws-cdk-lib";
 import { ApiRoutesProps } from "./http-api";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
-import { auth0Config } from "@/config/auth0";
+import { lambdaEnv } from "@/config/lambdaEnv";
 
 export class UserApiRoutes extends Construct {
   constructor(scope: Construct, id: string, props: ApiRoutesProps) {
@@ -22,8 +21,8 @@ export class UserApiRoutes extends Construct {
     const nodeJsFunctionProps: NodejsFunctionProps = {
       runtime: Runtime.NODEJS_16_X,
       vpc: vpc,
-      vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
-      environment: databaseConfig,
+      vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+      environment: lambdaEnv,
       timeout: Duration.seconds(30),
     };
 
@@ -35,12 +34,6 @@ export class UserApiRoutes extends Construct {
     const deleteUser = new NodejsFunction(this, "DeleteUserHandler", {
       entry: join(__dirname, "/../lambdas", "deleteUser.ts"),
       ...nodeJsFunctionProps,
-    });
-
-    const deleteAuth0User = new NodejsFunction(this, "DeleteAuth0UserHandler", {
-      entry: join(__dirname, "/../lambdas", "deleteAuth0User.ts"),
-      runtime: Runtime.NODEJS_16_X,
-      environment: auth0Config,
     });
 
     const getUserSavedChannels = new NodejsFunction(
@@ -62,11 +55,6 @@ export class UserApiRoutes extends Construct {
       deleteUser
     );
 
-    const deleteAuth0UserIntegration = new HttpLambdaIntegration(
-      "DeleteAuth0UserIntegration",
-      deleteAuth0User
-    );
-
     const getUserSavedChannelsIntegration = new HttpLambdaIntegration(
       "GetUserSavedChannelsIntegration",
       getUserSavedChannels
@@ -83,13 +71,6 @@ export class UserApiRoutes extends Construct {
       path: "/users/{user_id}",
       methods: [HttpMethod.DELETE],
       integration: deleteUserIntegration,
-      authorizer,
-    });
-
-    httpApi.addRoutes({
-      path: "/users/auth0/{user_id}",
-      methods: [HttpMethod.DELETE],
-      integration: deleteAuth0UserIntegration,
       authorizer,
     });
 

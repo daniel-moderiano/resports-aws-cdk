@@ -23,7 +23,7 @@ it("returns bad request for missing parameters", async () => {
       body: {
         status: "fail",
         data: {
-          savedChannels: "User ID is required",
+          user: "User ID is missing.",
         },
       },
     })
@@ -43,7 +43,7 @@ it("returns bad request for incorrect format of user information", async () => {
       body: {
         status: "fail",
         data: {
-          savedChannels: "User ID is invalid",
+          user: "User ID is invalid.",
         },
       },
     })

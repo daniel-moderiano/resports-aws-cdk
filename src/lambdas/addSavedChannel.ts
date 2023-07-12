@@ -1,56 +1,47 @@
+import {
+  addSavedChannelForUser,
+  createFailResponse,
+  createSuccessResponse,
+  handleDbConnection,
+} from "@/helpers";
 import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
-import { is } from "superstruct";
-import { SavedChannelStruct } from "@/types";
-import { insertSavedChannel } from "@/helpers";
-import { databaseClientConfig } from "@/config";
-import { Client } from "pg";
+import { is, object, string } from "superstruct";
+
+const SavedChannelRequestStruct = object({
+  userId: string(),
+  channelId: string(),
+});
 
 export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   if (!event.body) {
-    return JSON.stringify({
-      statusCode: 400,
-      headers: { "Content-Type": "application/json" },
-      body: {
-        status: "fail",
-        data: {
-          savedChannel: "Channel and user data is required",
-        },
-      },
+    return createFailResponse(400, {
+      savedChannel: "User and/or channel data is missing.",
     });
   }
 
-  const savedChannelInformation = JSON.parse(event.body);
+  const requestBody = JSON.parse(event.body);
 
-  if (!is(savedChannelInformation, SavedChannelStruct)) {
-    return JSON.stringify({
-      statusCode: 400,
-      headers: { "Content-Type": "application/json" },
-      body: {
-        status: "fail",
-        data: {
-          savedChannel: "Incorrect channel or user data format",
-        },
-      },
+  if (!is(requestBody, SavedChannelRequestStruct)) {
+    return createFailResponse(400, {
+      savedChannel: "Incorrect user and/or channel data.",
     });
   }
 
-  const database = new Client({ ...databaseClientConfig });
-  await database.connect();
+  const errorResponse = await handleDbConnection();
+  if (errorResponse) return errorResponse;
 
-  await insertSavedChannel(
-    database,
-    savedChannelInformation.user_id,
-    savedChannelInformation.channel_id
+  const updatedUser = await addSavedChannelForUser(
+    requestBody.userId,
+    requestBody.channelId
   );
 
-  await database.end();
-
-  return JSON.stringify({
-    statusCode: 200,
-    headers: { "Content-Type": "application/json" },
-    body: {
-      status: "success",
-      data: null,
-    },
-  });
+  if (updatedUser) {
+    return createSuccessResponse(201, {
+      user: updatedUser,
+    });
+  } else {
+    return createFailResponse(500, {
+      user: "Failed to save channel",
+    });
+  }
 };

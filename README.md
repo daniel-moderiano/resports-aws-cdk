@@ -32,6 +32,12 @@ We can now deploy the initial infrastructure. Note the AWS CLI profile must matc
 cdk deploy
 ```
 
+Note: if you have a profile configured, use
+
+```
+cdk deploy --profile <profile>
+```
+
 With the initial infrastructure deployed, we can now update the database host environment variable, and redeploy.
 
 ```

@@ -1,4 +1,4 @@
-import { Client, Pool } from "pg";
+import { Document } from "mongoose";
 import {
   Infer,
   boolean,
@@ -7,23 +7,28 @@ import {
   string,
   union,
   number,
+  array,
+  optional,
 } from "superstruct";
 
 // Superstruct types for runtime type checking
 export const ChannelStruct = object({
-  channel_id: string(),
+  _id: string(),
   platform: union([literal("youtube"), literal("twitch")]),
 });
 
 export const UserStruct = object({
+  _id: string(),
   email: string(),
   email_verified: boolean(),
-  user_id: string(),
+  saved_channels: optional(array(string())),
 });
 
-export const SavedChannelStruct = object({
-  user_id: string(),
-  channel_id: string(),
+export const PopulatedUserStruct = object({
+  _id: string(),
+  email: string(),
+  email_verified: boolean(),
+  saved_channels: array(ChannelStruct),
 });
 
 export const auth0AccessTokenResponse = object({
@@ -33,30 +38,26 @@ export const auth0AccessTokenResponse = object({
   token_type: string(),
 });
 
+// Mongo document types
+export interface ChannelDocument extends Document {
+  _id: string;
+  platform: string;
+}
+
+export interface UserDocument extends Document {
+  _id: string;
+  email: string;
+  email_verified: boolean;
+  saved_channels: ChannelDocument["_id"][];
+}
+
+export interface PopulatedUserDocument
+  extends Omit<UserDocument, "saved_channels"> {
+  saved_channels: ChannelDocument[];
+}
+
 export type Channel = Infer<typeof ChannelStruct>;
 export type User = Infer<typeof UserStruct>;
-export type SavedChannel = Infer<typeof SavedChannelStruct>;
-
-export type Database = Client | Pool;
-
-export type Table = "users" | "channels" | "saved_channels";
+export type PopulatedUser = Infer<typeof PopulatedUserStruct>;
 
 export type Auth0AccessTokenResponse = Infer<typeof auth0AccessTokenResponse>;
-
-// Defined using the JSend specification, see https://github.com/omniti-labs/jsend
-export type SuccessResponse = {
-  status: "success";
-  data: Record<string, unknown> | null;
-};
-
-export type FailResponse = {
-  status: "fail";
-  data: Record<string, unknown>;
-};
-
-export type ErrorResponse = {
-  status: "error";
-  message: string;
-  code?: number;
-  data?: string;
-};

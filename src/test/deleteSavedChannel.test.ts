@@ -4,15 +4,15 @@ import { mockCallback, mockContext, mockEvent } from "./constants";
 
 const eventNoParams: APIGatewayProxyEventV2 = {
   ...mockEvent,
-  queryStringParameters: undefined,
+  body: undefined,
 };
 
 const eventBadSavedChannel: APIGatewayProxyEventV2 = {
   ...mockEvent,
-  queryStringParameters: {
+  body: JSON.stringify({
     user_id: "1234",
     channel: "1234",
-  },
+  }),
 };
 
 it("returns bad request for missing body", async () => {
@@ -24,7 +24,7 @@ it("returns bad request for missing body", async () => {
       body: {
         status: "fail",
         data: {
-          savedChannel: "Channel and user data is required",
+          savedChannel: "User and/or channel data is missing.",
         },
       },
     })
@@ -44,7 +44,7 @@ it("returns bad request for incorrect format of channel information", async () =
       body: {
         status: "fail",
         data: {
-          savedChannel: "Channel or user data is incorrectly formatted",
+          savedChannel: "Incorrect user and/or channel data.",
         },
       },
     })

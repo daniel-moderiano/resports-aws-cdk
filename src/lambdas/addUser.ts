@@ -1,54 +1,40 @@
 import { Handler, APIGatewayProxyEventV2 } from "aws-lambda";
 import { is } from "superstruct";
-import { upsertUser } from "@/helpers";
 import { UserStruct } from "@/types";
-import { Client } from "pg";
-import { databaseClientConfig } from "@/config";
+import {
+  createFailResponse,
+  createSuccessResponse,
+  handleDbConnection,
+  upsertUser,
+} from "@/helpers";
 
 export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   if (!event.body) {
-    return JSON.stringify({
-      statusCode: 400,
-      headers: { "Content-Type": "application/json" },
-      body: {
-        status: "fail",
-        data: {
-          user: "User data is required",
-        },
-      },
+    return createFailResponse(400, {
+      user: "User data is required.",
     });
   }
 
   const userInformation = JSON.parse(event.body);
 
   if (!is(userInformation, UserStruct)) {
-    return JSON.stringify({
-      statusCode: 400,
-      headers: { "Content-Type": "application/json" },
-      body: {
-        status: "fail",
-        data: {
-          user: "User data is incorrectly formatted",
-        },
-      },
+    return createFailResponse(400, {
+      user: "User data is invalid.",
     });
   }
 
-  const database = new Client({ ...databaseClientConfig });
-  await database.connect();
+  const errorResponse = await handleDbConnection();
+  if (errorResponse) return errorResponse;
 
-  await upsertUser(database, userInformation);
+  const upsertedUser = await upsertUser(userInformation);
 
-  await database.end();
-
-  return JSON.stringify({
-    statusCode: 200,
-    headers: { "Content-Type": "application/json" },
-    body: {
-      status: "success",
-      data: {
-        user: userInformation,
-      },
-    },
-  });
+  if (upsertedUser) {
+    return createSuccessResponse(200, {
+      user: upsertedUser,
+    });
+  } else {
+    return createFailResponse(500, {
+      user: "Failed to add user",
+    });
+  }
 };

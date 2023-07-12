@@ -7,10 +7,10 @@ import {
 import { Construct } from "constructs";
 import { join } from "path";
 import { SubnetType } from "aws-cdk-lib/aws-ec2";
-import { databaseConfig } from "@/config";
 import { Duration } from "aws-cdk-lib";
 import { ApiRoutesProps } from "./http-api";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
+import { lambdaEnv } from "@/config/lambdaEnv";
 
 export class ChannelApiRoutes extends Construct {
   constructor(scope: Construct, id: string, props: ApiRoutesProps) {
@@ -21,8 +21,8 @@ export class ChannelApiRoutes extends Construct {
     const nodeJsFunctionProps: NodejsFunctionProps = {
       runtime: Runtime.NODEJS_16_X,
       vpc: vpc,
-      vpcSubnets: { subnetType: SubnetType.PRIVATE_ISOLATED },
-      environment: databaseConfig,
+      vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+      environment: lambdaEnv,
       timeout: Duration.seconds(30),
     };
 
