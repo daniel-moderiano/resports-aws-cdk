@@ -36,11 +36,6 @@ export class UserApiRoutes extends Construct {
       ...nodeJsFunctionProps,
     });
 
-    const deleteAuth0User = new NodejsFunction(this, "DeleteAuth0UserHandler", {
-      entry: join(__dirname, "/../lambdas", "deleteAuth0User.ts"),
-      ...nodeJsFunctionProps,
-    });
-
     const getUserSavedChannels = new NodejsFunction(
       this,
       "GetUserSavedChannelsHandler",
@@ -60,11 +55,6 @@ export class UserApiRoutes extends Construct {
       deleteUser
     );
 
-    const deleteAuth0UserIntegration = new HttpLambdaIntegration(
-      "DeleteAuth0UserIntegration",
-      deleteAuth0User
-    );
-
     const getUserSavedChannelsIntegration = new HttpLambdaIntegration(
       "GetUserSavedChannelsIntegration",
       getUserSavedChannels
@@ -81,13 +71,6 @@ export class UserApiRoutes extends Construct {
       path: "/users/{user_id}",
       methods: [HttpMethod.DELETE],
       integration: deleteUserIntegration,
-      authorizer,
-    });
-
-    httpApi.addRoutes({
-      path: "/users/auth0/{user_id}",
-      methods: [HttpMethod.DELETE],
-      integration: deleteAuth0UserIntegration,
       authorizer,
     });
 

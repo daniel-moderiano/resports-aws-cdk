@@ -6,7 +6,7 @@ import {
   Channel,
   User,
 } from "@/types";
-import { Document } from "mongoose";
+import mongoose, { Document, QueryOptions } from "mongoose";
 export interface SavedChannelDocument extends Document {
   channel_id: string;
 }
@@ -38,9 +38,11 @@ export const upsertUser = async (
 };
 
 export const deleteUser = async (
-  userId: string
+  userId: string,
+  session: mongoose.mongo.ClientSession | null = null
 ): Promise<UserDocument | null> => {
-  return UserModel.findByIdAndDelete(userId);
+  const options: QueryOptions = session ? { session } : {};
+  return UserModel.findByIdAndDelete(userId, options);
 };
 
 // SAVED CHANNELS TABLE QUERIES
@@ -84,12 +86,17 @@ export const removeSavedChannel = async (userId: string, channelId: string) => {
   );
 };
 
-export const removeOrphanChannel = async (channelId: string) => {
+export const removeOrphanChannel = async (
+  channelId: string,
+  session: mongoose.mongo.ClientSession | null = null
+) => {
+  const options: QueryOptions = session ? { session } : {};
+
   // Check if any other users still have this channel in their saved channels
   const user = await UserModel.findOne({ saved_channels: channelId });
 
   // If no user has this channel in their saved channels, delete the channel
   if (!user) {
-    await ChannelModel.findByIdAndDelete(channelId);
+    await ChannelModel.findByIdAndDelete(channelId, options);
   }
 };
