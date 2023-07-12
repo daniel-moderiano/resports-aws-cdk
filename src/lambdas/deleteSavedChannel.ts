@@ -38,7 +38,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
 
   if (deleteResult.modifiedCount !== 1) {
     return createFailResponse(500, {
-      user: "Error occurred while attempting to remove saved channel",
+      user: "Failed to remove saved channel",
     });
   }
 

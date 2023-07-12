@@ -34,7 +34,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     });
   } else {
     return createFailResponse(500, {
-      channel: "Error occurred while attempting to add channel",
+      channel: "Failed to add channel",
     });
   }
 };

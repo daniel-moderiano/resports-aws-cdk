@@ -25,7 +25,6 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
       user: "User ID is invalid.",
     });
   }
-  console.log("Attempting DB connection");
 
   const errorResponse = await handleDbConnection();
   if (errorResponse) return errorResponse;
@@ -40,7 +39,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     });
   } else {
     return createFailResponse(500, {
-      savedChannels: "An error occurred while retrieving saved channels.",
+      savedChannels: "Failed to retrieve saved channels.",
     });
   }
 };

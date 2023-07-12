@@ -34,7 +34,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     });
   } else {
     return createFailResponse(500, {
-      user: "Error occurred while attempting to add user",
+      user: "Failed to add user",
     });
   }
 };

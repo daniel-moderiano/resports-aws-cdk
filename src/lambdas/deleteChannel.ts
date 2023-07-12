@@ -35,7 +35,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     return createSuccessResponse(204, null);
   } else {
     return createFailResponse(500, {
-      channel: "Error occurred while attempting to deleting channel",
+      channel: "Failed to delete channel",
     });
   }
 };

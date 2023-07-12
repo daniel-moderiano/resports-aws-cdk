@@ -85,7 +85,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   } catch (error) {
     await session.abortTransaction();
     return createFailResponse(500, {
-      user: "Error occurred while attempting to delete user",
+      user: "Failed to delete user",
     });
   } finally {
     session.endSession();

@@ -30,7 +30,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   const errorResponse = await handleDbConnection();
   if (errorResponse) return errorResponse;
 
-  const updatedUser = addSavedChannelForUser(
+  const updatedUser = await addSavedChannelForUser(
     requestBody.userId,
     requestBody.channelId
   );
@@ -41,7 +41,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     });
   } else {
     return createFailResponse(500, {
-      user: "Error occurred while attempting to save channel",
+      user: "Failed to save channel",
     });
   }
 };
