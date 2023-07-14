@@ -14,17 +14,13 @@ const SavedChannelRequestStruct = object({
 
 export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   if (!event.body) {
-    return createFailResponse(400, {
-      savedChannel: "User and/or channel data is missing.",
-    });
+    return createFailResponse(400, "User and/or channel data is missing.");
   }
 
   const requestBody = JSON.parse(event.body);
 
   if (!is(requestBody, SavedChannelRequestStruct)) {
-    return createFailResponse(400, {
-      savedChannel: "Incorrect user and/or channel data.",
-    });
+    return createFailResponse(400, "Incorrect user and/or channel data.");
   }
 
   const errorResponse = await handleDbConnection();
@@ -40,8 +36,6 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
       user: updatedUser,
     });
   } else {
-    return createFailResponse(500, {
-      user: "Failed to save channel",
-    });
+    return createFailResponse(500, "Failed to save channel");
   }
 };

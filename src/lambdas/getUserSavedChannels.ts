@@ -15,15 +15,11 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   const userInformation = event.pathParameters;
 
   if (!userInformation) {
-    return createFailResponse(400, {
-      user: "User ID is missing.",
-    });
+    return createFailResponse(400, "User ID is missing.");
   }
 
   if (!is(userInformation, UserIdStruct)) {
-    return createFailResponse(400, {
-      user: "User ID is invalid.",
-    });
+    return createFailResponse(400, "User ID is invalid.");
   }
 
   const errorResponse = await handleDbConnection();
@@ -38,8 +34,6 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
       savedChannels,
     });
   } else {
-    return createFailResponse(500, {
-      savedChannels: "Failed to retrieve saved channels.",
-    });
+    return createFailResponse(500, "Failed to retrieve saved channels.");
   }
 };

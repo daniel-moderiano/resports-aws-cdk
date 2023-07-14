@@ -1,4 +1,8 @@
-// Inspired by JSend https://github.com/omniti-labs/jsend
+/**
+ * Inspired by JSend https://github.com/omniti-labs/jsend with simplifications.
+ * "Fail" and "Error" are ultimately treated the same way on the frontend, so they've
+ * been combined into a simple "fail with message" type response
+ */
 
 export const createSuccessResponse = (
   statusCode: number,
@@ -14,29 +18,13 @@ export const createSuccessResponse = (
   });
 };
 
-export const createFailResponse = (statusCode: number, data: object) => {
+export const createFailResponse = (statusCode: number, message: string) => {
   return JSON.stringify({
     statusCode: statusCode,
     headers: { "Content-Type": "application/json" },
     body: {
       status: "fail",
-      data: data,
-    },
-  });
-};
-
-export const createErrorResponse = (
-  statusCode: number,
-  message: string,
-  data: object | null = null
-) => {
-  return JSON.stringify({
-    statusCode: statusCode,
-    headers: { "Content-Type": "application/json" },
-    body: {
-      status: "error",
       message: message,
-      data,
     },
   });
 };

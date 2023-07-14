@@ -10,17 +10,13 @@ import {
 
 export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   if (!event.body) {
-    return createFailResponse(400, {
-      channel: "Channel data is required",
-    });
+    return createFailResponse(400, "Channel data is required");
   }
 
   const channelInformation = JSON.parse(event.body);
 
   if (!is(channelInformation, ChannelStruct)) {
-    return createFailResponse(400, {
-      channel: "Incorrect channel data format",
-    });
+    return createFailResponse(400, "Incorrect channel data format");
   }
 
   const errorResponse = await handleDbConnection();
@@ -33,8 +29,6 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
       channel: insertedChannel,
     });
   } else {
-    return createFailResponse(500, {
-      channel: "Failed to add channel",
-    });
+    return createFailResponse(500, "Failed to add channel");
   }
 };
