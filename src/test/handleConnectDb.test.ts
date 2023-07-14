@@ -1,4 +1,4 @@
-import { handleDbConnection, createErrorResponse } from "@/helpers";
+import { handleDbConnection, createFailResponse } from "@/helpers";
 import { connectDb } from "@/config";
 
 jest.mock("@/config/mongo");
@@ -14,7 +14,7 @@ describe("DB Handler", () => {
     (connectDb as jest.Mock).mockRejectedValue(new Error());
     const result = await handleDbConnection();
     expect(result).toEqual(
-      createErrorResponse(
+      createFailResponse(
         500,
         "An error occurred while attempting to connect to the database."
       )

@@ -23,9 +23,7 @@ it("returns bad request for missing body", async () => {
       headers: { "Content-Type": "application/json" },
       body: {
         status: "fail",
-        data: {
-          channel: "Channel data is required",
-        },
+        message: "Channel data is required",
       },
     })
   );
@@ -39,9 +37,7 @@ it("returns bad request for incorrect format of channel information", async () =
       headers: { "Content-Type": "application/json" },
       body: {
         status: "fail",
-        data: {
-          channel: "Incorrect channel data format",
-        },
+        message: "Incorrect channel data format",
       },
     })
   );

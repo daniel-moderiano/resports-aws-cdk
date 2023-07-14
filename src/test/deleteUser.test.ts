@@ -22,9 +22,7 @@ it("returns bad request for missing path params", async () => {
       headers: { "Content-Type": "application/json" },
       body: {
         status: "fail",
-        data: {
-          user: "User ID is required.",
-        },
+        message: "User ID is required.",
       },
     })
   );
@@ -38,9 +36,7 @@ it("returns bad request for incorrect format of user information", async () => {
       headers: { "Content-Type": "application/json" },
       body: {
         status: "fail",
-        data: {
-          user: "User ID is invalid.",
-        },
+        message: "User ID is invalid.",
       },
     })
   );

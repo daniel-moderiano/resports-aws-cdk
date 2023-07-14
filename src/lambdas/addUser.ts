@@ -10,17 +10,13 @@ import {
 
 export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   if (!event.body) {
-    return createFailResponse(400, {
-      user: "User data is required.",
-    });
+    return createFailResponse(400, "User data is required.");
   }
 
   const userInformation = JSON.parse(event.body);
 
   if (!is(userInformation, UserStruct)) {
-    return createFailResponse(400, {
-      user: "User data is invalid.",
-    });
+    return createFailResponse(400, "User data is invalid.");
   }
 
   const errorResponse = await handleDbConnection();
@@ -33,8 +29,6 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
       user: upsertedUser,
     });
   } else {
-    return createFailResponse(500, {
-      user: "Failed to add user",
-    });
+    return createFailResponse(500, "Failed to add user");
   }
 };

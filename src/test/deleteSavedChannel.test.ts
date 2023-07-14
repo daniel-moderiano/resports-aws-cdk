@@ -23,9 +23,7 @@ it("returns bad request for missing body", async () => {
       headers: { "Content-Type": "application/json" },
       body: {
         status: "fail",
-        data: {
-          savedChannel: "User and/or channel data is missing.",
-        },
+        message: "User and/or channel data is missing.",
       },
     })
   );
@@ -43,9 +41,7 @@ it("returns bad request for incorrect format of channel information", async () =
       headers: { "Content-Type": "application/json" },
       body: {
         status: "fail",
-        data: {
-          savedChannel: "Incorrect user and/or channel data.",
-        },
+        message: "Incorrect user and/or channel data.",
       },
     })
   );

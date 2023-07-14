@@ -15,15 +15,11 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   const channelInformation = event.pathParameters;
 
   if (!channelInformation) {
-    return createFailResponse(400, {
-      channel: "Channel ID is required",
-    });
+    return createFailResponse(400, "Channel ID is required");
   }
 
   if (!is(channelInformation, ChannelIdStruct)) {
-    return createFailResponse(400, {
-      channel: "Channel ID is incorrectly formatted",
-    });
+    return createFailResponse(400, "Channel ID is incorrectly formatted");
   }
 
   const errorResponse = await handleDbConnection();
@@ -34,8 +30,6 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   if (deletedChannel) {
     return createSuccessResponse(204, null);
   } else {
-    return createFailResponse(500, {
-      channel: "Failed to delete channel",
-    });
+    return createFailResponse(500, "Failed to delete channel");
   }
 };

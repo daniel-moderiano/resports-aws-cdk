@@ -22,9 +22,7 @@ it("returns bad request for missing path params", async () => {
       headers: { "Content-Type": "application/json" },
       body: {
         status: "fail",
-        data: {
-          channel: "Channel ID is required",
-        },
+        message: "Channel ID is required",
       },
     })
   );
@@ -38,9 +36,7 @@ it("returns bad request for incorrect format of channel information", async () =
       headers: { "Content-Type": "application/json" },
       body: {
         status: "fail",
-        data: {
-          channel: "Channel ID is incorrectly formatted",
-        },
+        message: "Channel ID is incorrectly formatted",
       },
     })
   );

@@ -46,15 +46,11 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   const userInformation = event.pathParameters;
 
   if (!userInformation) {
-    return createFailResponse(400, {
-      user: "User ID is required.",
-    });
+    return createFailResponse(400, "User ID is required.");
   }
 
   if (!is(userInformation, UserIdStruct)) {
-    return createFailResponse(400, {
-      user: "User ID is invalid.",
-    });
+    return createFailResponse(400, "User ID is invalid.");
   }
 
   const errorResponse = await handleDbConnection();
@@ -84,9 +80,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     return createSuccessResponse(204, null);
   } catch (error) {
     await session.abortTransaction();
-    return createFailResponse(500, {
-      user: "Failed to delete user",
-    });
+    return createFailResponse(500, "Failed to delete user");
   } finally {
     session.endSession();
   }
