@@ -22,8 +22,7 @@ it("returns bad request for missing body", async () => {
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        status: "fail",
-        message: "User data is required.",
+        errorMessage: "User data is required.",
       },
     })
   );
@@ -36,8 +35,7 @@ it("returns bad request for incorrect format of user information", async () => {
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        status: "fail",
-        message: "User data is invalid.",
+        errorMessage: "User data is invalid.",
       },
     })
   );

@@ -1,43 +1,27 @@
-/**
- * Inspired by JSend https://github.com/omniti-labs/jsend with simplifications.
- * "Fail" and "Error" are ultimately treated the same way on the frontend, so they've
- * been combined into a simple "fail with message" type response
- */
-
 import { Channel, User } from "@/types";
 
-export const createSuccessResponse = (
+export const createSuccessHttpResponse = (
   statusCode: number,
-  data: object | null
+  data: Channel[] | User | null
 ) => {
   return JSON.stringify({
     statusCode: statusCode,
     headers: { "Content-Type": "application/json" },
     body: {
-      status: "success",
-      data: data,
+      data,
     },
   });
 };
 
-export const createFailResponse = (statusCode: number, message: string) => {
-  return JSON.stringify({
-    statusCode: statusCode,
-    headers: { "Content-Type": "application/json" },
-    body: {
-      status: "fail",
-      message: message,
-    },
-  });
-};
-
-export const createHttpResponse = (
+export const createErrorHttpResponse = (
   statusCode: number,
-  body: Channel[] | User | null
+  errorMessage: string
 ) => {
   return JSON.stringify({
     statusCode: statusCode,
     headers: { "Content-Type": "application/json" },
-    body,
+    body: {
+      errorMessage,
+    },
   });
 };

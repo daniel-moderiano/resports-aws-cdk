@@ -1,8 +1,8 @@
 import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { is, object, string } from "superstruct";
 import {
-  createFailResponse,
-  createSuccessResponse,
+  createErrorHttpResponse,
+  createSuccessHttpResponse,
   deleteUser,
   handleDbConnection,
 } from "@/helpers";
@@ -45,11 +45,11 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   const userInformation = event.pathParameters;
 
   if (!userInformation) {
-    return createFailResponse(400, "User ID is required.");
+    return createErrorHttpResponse(400, "User ID is required.");
   }
 
   if (!is(userInformation, UserIdStruct)) {
-    return createFailResponse(400, "User ID is invalid.");
+    return createErrorHttpResponse(400, "User ID is invalid.");
   }
 
   const errorResponse = await handleDbConnection();
@@ -70,10 +70,10 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     await deleteAuth0User(userInformation.user_id);
 
     await session.commitTransaction();
-    return createSuccessResponse(204, null);
+    return createSuccessHttpResponse(204, null);
   } catch (error) {
     await session.abortTransaction();
-    return createFailResponse(500, "Failed to delete user");
+    return createErrorHttpResponse(500, "Failed to delete user");
   } finally {
     session.endSession();
   }

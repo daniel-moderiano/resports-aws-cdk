@@ -1,8 +1,8 @@
 import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { is, object, string } from "superstruct";
 import {
-  createFailResponse,
-  createSuccessResponse,
+  createErrorHttpResponse,
+  createSuccessHttpResponse,
   getSavedChannels,
   handleDbConnection,
 } from "@/helpers";
@@ -15,11 +15,11 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   const userInformation = event.pathParameters;
 
   if (!userInformation) {
-    return createFailResponse(400, "User ID is missing.");
+    return createErrorHttpResponse(400, "User ID is missing.");
   }
 
   if (!is(userInformation, UserIdStruct)) {
-    return createFailResponse(400, "User ID is invalid.");
+    return createErrorHttpResponse(400, "User ID is invalid.");
   }
 
   const errorResponse = await handleDbConnection();
@@ -28,10 +28,8 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   const savedChannels = await getSavedChannels(userInformation.user_id);
 
   if (savedChannels) {
-    return createSuccessResponse(200, {
-      savedChannels,
-    });
+    return createSuccessHttpResponse(200, savedChannels);
   } else {
-    return createFailResponse(500, "Failed to retrieve saved channels.");
+    return createErrorHttpResponse(500, "Failed to retrieve saved channels.");
   }
 };

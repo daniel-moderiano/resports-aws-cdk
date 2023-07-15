@@ -1,6 +1,6 @@
 import {
-  createFailResponse,
-  createSuccessResponse,
+  createErrorHttpResponse,
+  createSuccessHttpResponse,
   deleteSavedChannel,
   handleDbConnection,
 } from "@/helpers";
@@ -14,13 +14,13 @@ const SavedChannelRequestStruct = object({
 
 export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   if (!event.body) {
-    return createFailResponse(400, "User and/or channel data is missing.");
+    return createErrorHttpResponse(400, "User and/or channel data is missing.");
   }
 
   const requestBody = JSON.parse(event.body);
 
   if (!is(requestBody, SavedChannelRequestStruct)) {
-    return createFailResponse(400, "Incorrect user and/or channel data.");
+    return createErrorHttpResponse(400, "Incorrect user and/or channel data.");
   }
 
   const errorResponse = await handleDbConnection();
@@ -28,5 +28,5 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
 
   await deleteSavedChannel(requestBody.userId, requestBody.channelId);
 
-  return createSuccessResponse(204, null);
+  return createSuccessHttpResponse(204, null);
 };

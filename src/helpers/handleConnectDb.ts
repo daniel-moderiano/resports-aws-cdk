@@ -1,5 +1,6 @@
 import { connectDb } from "@/config";
-import { createFailResponse } from "./apiResonseGenerator";
+import { createErrorHttpResponse } from ".";
+
 /**
  * Abstracts the common DB connection operation in lambda handlers.
  *
@@ -15,7 +16,7 @@ export const handleDbConnection = async () => {
     await connectDb();
     return null; // returns null when the connection is successful
   } catch (error) {
-    return createFailResponse(
+    return createErrorHttpResponse(
       500,
       "An error occurred while attempting to connect to the database."
     );

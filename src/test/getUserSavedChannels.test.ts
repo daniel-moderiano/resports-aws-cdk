@@ -21,8 +21,7 @@ it("returns bad request for missing parameters", async () => {
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        status: "fail",
-        message: "User ID is missing.",
+        errorMessage: "User ID is missing.",
       },
     })
   );
@@ -39,8 +38,7 @@ it("returns bad request for incorrect format of user information", async () => {
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        status: "fail",
-        message: "User ID is invalid.",
+        errorMessage: "User ID is invalid.",
       },
     })
   );
