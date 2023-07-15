@@ -2,21 +2,21 @@ import { Handler, APIGatewayProxyEventV2 } from "aws-lambda";
 import { is } from "superstruct";
 import { UserStruct } from "@/types";
 import {
-  createFailResponse,
-  createSuccessResponse,
+  createErrorHttpResponse,
+  createSuccessHttpResponse,
   handleDbConnection,
   upsertUser,
 } from "@/helpers";
 
 export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   if (!event.body) {
-    return createFailResponse(400, "User data is required.");
+    return createErrorHttpResponse(400, "User data is required.");
   }
 
   const userInformation = JSON.parse(event.body);
 
   if (!is(userInformation, UserStruct)) {
-    return createFailResponse(400, "User data is invalid.");
+    return createErrorHttpResponse(400, "User data is invalid.");
   }
 
   const errorResponse = await handleDbConnection();
@@ -25,10 +25,8 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   const upsertedUser = await upsertUser(userInformation);
 
   if (upsertedUser) {
-    return createSuccessResponse(200, {
-      user: upsertedUser,
-    });
+    return createSuccessHttpResponse(200, upsertedUser);
   } else {
-    return createFailResponse(500, "Failed to add user");
+    return createErrorHttpResponse(500, "Failed to add user");
   }
 };
