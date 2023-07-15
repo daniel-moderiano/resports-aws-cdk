@@ -3,7 +3,7 @@ import { is, object, string } from "superstruct";
 import {
   createFailResponse,
   createSuccessResponse,
-  getAllSavedChannelsForUser,
+  getSavedChannels,
   handleDbConnection,
 } from "@/helpers";
 
@@ -25,9 +25,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   const errorResponse = await handleDbConnection();
   if (errorResponse) return errorResponse;
 
-  const savedChannels = await getAllSavedChannelsForUser(
-    userInformation.user_id
-  );
+  const savedChannels = await getSavedChannels(userInformation.user_id);
 
   if (savedChannels) {
     return createSuccessResponse(200, {

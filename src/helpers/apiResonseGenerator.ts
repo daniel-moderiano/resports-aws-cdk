@@ -4,6 +4,8 @@
  * been combined into a simple "fail with message" type response
  */
 
+import { Channel, User } from "@/types";
+
 export const createSuccessResponse = (
   statusCode: number,
   data: object | null
@@ -26,5 +28,16 @@ export const createFailResponse = (statusCode: number, message: string) => {
       status: "fail",
       message: message,
     },
+  });
+};
+
+export const createHttpResponse = (
+  statusCode: number,
+  body: Channel[] | User | null
+) => {
+  return JSON.stringify({
+    statusCode: statusCode,
+    headers: { "Content-Type": "application/json" },
+    body,
   });
 };
