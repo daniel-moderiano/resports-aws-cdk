@@ -1,7 +1,6 @@
 import { CorsHttpMethod, HttpApi } from "@aws-cdk/aws-apigatewayv2-alpha";
 import { HttpJwtAuthorizer } from "@aws-cdk/aws-apigatewayv2-authorizers-alpha";
 import { Construct } from "constructs";
-import { ChannelApiRoutes } from "./channel-api-routes";
 import { UserApiRoutes } from "./user-api-routes";
 import { SavedChannelApiRoutes } from "./saved-channels-api-routes";
 import { Vpc } from "aws-cdk-lib/aws-ec2";
@@ -46,12 +45,6 @@ export class APIGateway extends Construct {
         identitySource: ["$request.header.Authorization"],
       }
     );
-
-    new ChannelApiRoutes(this, "ChannelApiRoutes", {
-      httpApi,
-      authorizer,
-      vpc: props.vpc,
-    });
 
     new UserApiRoutes(this, "UserApiRoutes", {
       httpApi,
