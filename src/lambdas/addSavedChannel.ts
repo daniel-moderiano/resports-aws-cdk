@@ -1,15 +1,16 @@
 import {
-  addSavedChannelForUser,
+  addSavedChannel,
   createFailResponse,
   createSuccessResponse,
   handleDbConnection,
 } from "@/helpers";
+import { ChannelStruct } from "@/types";
 import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { is, object, string } from "superstruct";
 
 const SavedChannelRequestStruct = object({
   userId: string(),
-  channelId: string(),
+  channel: ChannelStruct,
 });
 
 export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
@@ -26,9 +27,9 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   const errorResponse = await handleDbConnection();
   if (errorResponse) return errorResponse;
 
-  const updatedUser = await addSavedChannelForUser(
+  const updatedUser = await addSavedChannel(
     requestBody.userId,
-    requestBody.channelId
+    requestBody.channel
   );
 
   if (updatedUser) {

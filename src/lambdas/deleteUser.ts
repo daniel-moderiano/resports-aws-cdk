@@ -5,7 +5,6 @@ import {
   createSuccessResponse,
   deleteUser,
   handleDbConnection,
-  removeOrphanChannel,
 } from "@/helpers";
 import axios, { AxiosResponse } from "axios";
 import { lambdaEnv } from "@/config";
@@ -66,12 +65,6 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     if (!deletedUser) {
       throw new Error("Error with mongo user delete operation");
     }
-
-    await Promise.all(
-      deletedUser.saved_channels.map((channel) =>
-        removeOrphanChannel(channel, session)
-      )
-    );
 
     // The axios requests within this function will throw their own errors for status outside of 200-209
     await deleteAuth0User(userInformation.user_id);

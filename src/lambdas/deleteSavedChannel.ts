@@ -1,9 +1,8 @@
 import {
   createFailResponse,
   createSuccessResponse,
+  deleteSavedChannel,
   handleDbConnection,
-  removeOrphanChannel,
-  removeSavedChannel,
 } from "@/helpers";
 import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
 import { is, object, string } from "superstruct";
@@ -27,17 +26,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   const errorResponse = await handleDbConnection();
   if (errorResponse) return errorResponse;
 
-  const deleteResult = await removeSavedChannel(
-    requestBody.userId,
-    requestBody.channelId
-  );
-
-  if (deleteResult.modifiedCount !== 1) {
-    return createFailResponse(500, "Failed to remove saved channel");
-  }
-
-  // Channel removed from user's list of saved channels. Remove channel entirely if orphaned.
-  await removeOrphanChannel(requestBody.channelId);
+  await deleteSavedChannel(requestBody.userId, requestBody.channelId);
 
   return createSuccessResponse(204, null);
 };
