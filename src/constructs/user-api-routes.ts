@@ -36,6 +36,20 @@ export class UserApiRoutes extends Construct {
       ...nodeJsFunctionProps,
     });
 
+    const addSavedChannel = new NodejsFunction(this, "AddSavedChannelHandler", {
+      entry: join(__dirname, "/../lambdas", "addSavedChannel.ts"),
+      ...nodeJsFunctionProps,
+    });
+
+    const deleteSavedChannel = new NodejsFunction(
+      this,
+      "DeleteSavedChannelHandler",
+      {
+        entry: join(__dirname, "/../lambdas", "deleteSavedChannel.ts"),
+        ...nodeJsFunctionProps,
+      }
+    );
+
     const getUserSavedChannels = new NodejsFunction(
       this,
       "GetUserSavedChannelsHandler",
@@ -55,6 +69,16 @@ export class UserApiRoutes extends Construct {
       deleteUser
     );
 
+    const addSavedChannelIntegration = new HttpLambdaIntegration(
+      "AddSavedChannelIntegration",
+      addSavedChannel
+    );
+
+    const deleteSavedChannelIntegration = new HttpLambdaIntegration(
+      "DeleteSavedChannelIntegration",
+      deleteSavedChannel
+    );
+
     const getUserSavedChannelsIntegration = new HttpLambdaIntegration(
       "GetUserSavedChannelsIntegration",
       getUserSavedChannels
@@ -68,16 +92,30 @@ export class UserApiRoutes extends Construct {
     });
 
     httpApi.addRoutes({
-      path: "/users/{user_id}",
+      path: "/users/{userId}",
       methods: [HttpMethod.DELETE],
       integration: deleteUserIntegration,
       authorizer,
     });
 
     httpApi.addRoutes({
-      path: "/users/{user_id}/saved-channels",
+      path: "/users/{userId}/saved-channels",
       methods: [HttpMethod.GET],
       integration: getUserSavedChannelsIntegration,
+      authorizer,
+    });
+
+    httpApi.addRoutes({
+      path: "/users/{userId}/saved-channels",
+      methods: [HttpMethod.POST],
+      integration: addSavedChannelIntegration,
+      authorizer,
+    });
+
+    httpApi.addRoutes({
+      path: "/users/{userId}/saved-channels/{channelId}",
+      methods: [HttpMethod.DELETE],
+      integration: deleteSavedChannelIntegration,
       authorizer,
     });
   }
