@@ -8,7 +8,7 @@ import {
 } from "@/helpers";
 
 const UserIdStruct = object({
-  user_id: string(),
+  userId: string(),
 });
 
 export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
@@ -25,7 +25,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
   const errorResponse = await handleDbConnection();
   if (errorResponse) return errorResponse;
 
-  const savedChannels = await getSavedChannels(userInformation.user_id);
+  const savedChannels = await getSavedChannels(userInformation.userId);
 
   if (savedChannels) {
     return createSuccessHttpResponse(200, savedChannels);
