@@ -12,7 +12,7 @@ import { Auth0AccessTokenResponse } from "@/types";
 import mongoose from "mongoose";
 
 const UserIdStruct = object({
-  user_id: string(),
+  userId: string(),
 });
 
 const deleteAuth0User = async (userId: string) => {
@@ -60,14 +60,14 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     // ! All queries must include the session in their options
     session.startTransaction();
 
-    const deletedUser = await deleteUser(userInformation.user_id, session);
+    const deletedUser = await deleteUser(userInformation.userId, session);
 
     if (!deletedUser) {
       throw new Error("Error with mongo user delete operation");
     }
 
     // The axios requests within this function will throw their own errors for status outside of 200-209
-    await deleteAuth0User(userInformation.user_id);
+    await deleteAuth0User(userInformation.userId);
 
     await session.commitTransaction();
     return createSuccessHttpResponse(204, null);

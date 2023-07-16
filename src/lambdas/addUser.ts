@@ -1,5 +1,5 @@
 import { Handler, APIGatewayProxyEventV2 } from "aws-lambda";
-import { is } from "superstruct";
+import { is, omit } from "superstruct";
 import { UserStruct } from "@/types";
 import {
   createErrorHttpResponse,
@@ -15,7 +15,7 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
 
   const userInformation = JSON.parse(event.body);
 
-  if (!is(userInformation, UserStruct)) {
+  if (!is(userInformation, omit(UserStruct, ["saved_channels"]))) {
     return createErrorHttpResponse(400, "User data is invalid.");
   }
 
