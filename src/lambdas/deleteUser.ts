@@ -1,5 +1,4 @@
 import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
-import { is, object, string } from "superstruct";
 import {
   createErrorHttpResponse,
   createSuccessHttpResponse,
@@ -10,10 +9,7 @@ import axios, { AxiosResponse } from "axios";
 import { lambdaEnv } from "@/config";
 import { Auth0AccessTokenResponse } from "@/types";
 import mongoose from "mongoose";
-
-const UserIdStruct = object({
-  userId: string(),
-});
+import { getUserIdFromLambdaEvent } from "@/helpers/JwtDecoder";
 
 const deleteAuth0User = async (userId: string) => {
   // Get Management API Access Token
@@ -42,15 +38,7 @@ const deleteAuth0User = async (userId: string) => {
 };
 
 export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
-  const userInformation = event.pathParameters;
-
-  if (!userInformation) {
-    return createErrorHttpResponse(400, "User ID is required.");
-  }
-
-  if (!is(userInformation, UserIdStruct)) {
-    return createErrorHttpResponse(400, "User ID is invalid.");
-  }
+  const userId = getUserIdFromLambdaEvent(event);
 
   const errorResponse = await handleDbConnection();
   if (errorResponse) return errorResponse;
@@ -60,14 +48,14 @@ export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
     // ! All queries must include the session in their options
     session.startTransaction();
 
-    const deletedUser = await deleteUser(userInformation.userId, session);
+    const deletedUser = await deleteUser(userId, session);
 
     if (!deletedUser) {
       throw new Error("Error with mongo user delete operation");
     }
 
     // The axios requests within this function will throw their own errors for status outside of 200-209
-    await deleteAuth0User(userInformation.userId);
+    await deleteAuth0User(userId);
 
     await session.commitTransaction();
     return createSuccessHttpResponse(204, null);

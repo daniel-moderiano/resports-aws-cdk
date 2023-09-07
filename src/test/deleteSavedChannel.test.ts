@@ -10,8 +10,7 @@ const eventNoParams: APIGatewayProxyEventV2 = {
 const eventBadSavedChannel: APIGatewayProxyEventV2 = {
   ...mockEvent,
   pathParameters: {
-    notUserId: "1234",
-    channel: "1234",
+    notChannelId: "1234",
   },
 };
 
@@ -22,7 +21,7 @@ it("returns bad request for missing body", async () => {
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        errorMessage: "User and/or channel ID is missing.",
+        errorMessage: "Channel ID is missing.",
       },
     })
   );
@@ -39,7 +38,7 @@ it("returns bad request for incorrect format of channel information", async () =
       statusCode: 400,
       headers: { "Content-Type": "application/json" },
       body: {
-        errorMessage: "User and/or channel parameters are invalid",
+        errorMessage: "Channel ID is invalid",
       },
     })
   );
