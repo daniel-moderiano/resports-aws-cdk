@@ -1,31 +1,19 @@
 import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
-import { is, object, string } from "superstruct";
 import {
   createErrorHttpResponse,
   createSuccessHttpResponse,
   getSavedChannels,
   handleDbConnection,
 } from "@/helpers";
-
-const UserIdStruct = object({
-  userId: string(),
-});
+import { getUserIdFromLambdaEvent } from "@/helpers/JwtDecoder";
 
 export const handler: Handler = async function (event: APIGatewayProxyEventV2) {
-  const userInformation = event.pathParameters;
-
-  if (!userInformation) {
-    return createErrorHttpResponse(400, "User ID is missing.");
-  }
-
-  if (!is(userInformation, UserIdStruct)) {
-    return createErrorHttpResponse(400, "User ID is invalid.");
-  }
+  const userId = getUserIdFromLambdaEvent(event);
 
   const errorResponse = await handleDbConnection();
   if (errorResponse) return errorResponse;
 
-  const savedChannels = await getSavedChannels(userInformation.userId);
+  const savedChannels = await getSavedChannels(userId);
 
   if (savedChannels) {
     return createSuccessHttpResponse(200, savedChannels);
