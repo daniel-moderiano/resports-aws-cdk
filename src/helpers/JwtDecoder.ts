@@ -14,7 +14,7 @@ export const getUserIdFromLambdaEvent = (
   const authHeader = event.headers.Authorization ?? event.headers.authorization;
 
   if (!authHeader) {
-    throw new Error("No authorization header");
+    throw new Error("No authorization header found in request");
   }
 
   const token = authHeader.split(" ")[1];
